@@ -1,0 +1,105 @@
+---
+infra:
+    provision:
+
+
+      cloud:
+        aws:
+          ami: ami-92340
+          region: us-east-1
+          security_groups:
+          - default
+          instance_type: m1-large
+#          instance_tags:
+#            name: sleepy
+#            squiggle: bar
+          instances:
+          - name: db_server
+#            instance_tags:
+#              weather: nice
+            region: us-east-2
+          - name: host19
+#            instance_tags:
+#              weather: bad
+          - name: host2
+            security_groups:
+            - special_squirrel
+            ami: ami-2134890
+            count: 4
+            instance_type: f1-2xlarge
+
+      baremetal:
+        beaker:
+          arch: x86_64
+          distro: RHEL-7.4
+          variant: Server
+          hostrequires:
+            processor:
+              op: ">="
+              value: 4
+            device:
+              op: "="
+              type: network
+          job_group: central-ci-ops
+
+          instances:
+          - name: foo1
+            arch: s390x
+            keyvalue:
+              network: e1000
+          - name: foo2
+            arch: aarm64
+          - name: foo3
+            variant: Workstation
+
+    configure:
+#
+#      openstack:
+#        count: 2
+
+#    - baremetal:
+#      - type: "beaker"
+#        count: 2
+#        distro: "rhel"
+#        arch: "x86_64"
+#        variant: "server"
+#
+#    - container:
+#        count: 3
+#        name: "mysql"
+#        type: "docker"
+#
+#  - configure:
+#    - playbook:
+#        location: /home/runtest.yml
+#        params: 'version=3.7'
+#
+#tests:
+#  - playbook:
+#      location: /home/runtest.yml
+#      params: 'version=3.7'
+#
+#results:
+#  - format:
+#    - xunit:
+#      location: /path/to/output/
+#      file_names:
+#        - ouptut.xml
+#        - errors.xml
+#    - artifacts:
+#      location: /path/for/artifact/storage/
+#      file_names: "*"
+#
+#  - delivery:
+#    - email:
+#        addresses:
+#          - you@example.com
+#          - me@example.com
+#    - messaging:
+#        - irc:
+#          server: irc.foo.com
+#          channel: "#yipee"
+#          message: "Run completed successfully"
+#        - umb:
+#          topic: "thisIsMyTopic"
+#          message: "This is my message"
