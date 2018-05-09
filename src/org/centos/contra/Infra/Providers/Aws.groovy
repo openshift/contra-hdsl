@@ -1,11 +1,15 @@
-package org.centos.pipeline.Infra.Providers
+package org.centos.contra.Infra.Providers
 
-class Aws {
+class Aws implements Serializable{
     String ami
     String region
     String name
     String instance_type
-    String provider_type = 'aws'
+    String keyPair
+    String user
+    String vpcSubnetID
+    Boolean AssignPublicIP
+    String providerType = 'aws'
     ArrayList<String> security_groups = []
     ArrayList<String> instance_tags = []
 
@@ -20,24 +24,12 @@ class Aws {
         return ami
     }
 
-    void setAmi(String ami) {
-        this.ami = ami
-    }
-
     String getRegion() {
         return region
     }
 
-    void setRegion(String region) {
-        this.region = region
-    }
-
     String getName() {
         return name
-    }
-
-    void setName(String name) {
-        this.name = name
     }
 
     String getSecurity_groups() {
@@ -64,11 +56,43 @@ class Aws {
         this.instance_tags = instance_tags
     }
 
-    String getProvider_type() {
-        return provider_type
+    String getProviderType() {
+        return providerType
     }
 
-    void setProvider_type(String type) {
-        this.provider_type = type
+    void setProviderType(String type) {
+        this.providerType = type
+    }
+
+    String getKeyPair() {
+        return keyPair
+    }
+
+    void setKeyPair(String keyPair) {
+        this.keyPair = keyPair
+    }
+
+    String getVpcSubnetID() {
+        return vpcSubnetID
+    }
+
+    void setVpcSubnetID(String vpcSubnetID) {
+        this.vpcSubnetID = vpcSubnetID
+    }
+
+    Boolean getAssignPublicIP() {
+        return AssignPublicIP
+    }
+
+    void setAssignPublicIP(Boolean assignPublicIP) {
+        AssignPublicIP = assignPublicIP
+    }
+
+    String getUser() {
+        return user
+    }
+
+    void setUser(String user) {
+        this.user = user
     }
 }

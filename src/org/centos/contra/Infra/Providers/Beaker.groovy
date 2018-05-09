@@ -1,15 +1,16 @@
-package org.centos.pipeline.Infra.Providers
+package org.centos.contra.Infra.Providers
 
-class Beaker {
+class Beaker implements Serializable{
     String name
     String distro
     String arch
     String variant
-    HashMap<String, String> hostrequires = [:]
+    ArrayList<HashMap<String,String>> hostrequires = []
     ArrayList<HashMap<String,String>> keyvalue = []
+    String job_group = ""
     String bkr_data = ""
     String whiteboard = ""
-    String provider_type = 'beaker'
+    String providerType = 'beaker'
 
 
     Beaker(String name, String distro, String arch, String variant) {
@@ -35,11 +36,11 @@ class Beaker {
         return variant
     }
 
-    HashMap<String, String> getHostrequires() {
+    ArrayList<HashMap<String,String>> getHostrequires() {
         return hostrequires
     }
 
-    void setHostrequires(HashMap<String, String> hostrequires) {
+    void setHostrequires(ArrayList<HashMap> hostrequires) {
         this.hostrequires = hostrequires
     }
 
@@ -65,5 +66,13 @@ class Beaker {
 
     void setWhiteboard(String whiteboard) {
         this.whiteboard = whiteboard
+    }
+
+    String getJob_group() {
+        return job_group
+    }
+
+    void setJob_group(String job_group) {
+        this.job_group = job_group
     }
 }

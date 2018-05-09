@@ -1,0 +1,19 @@
+${index}_${providerType}:
+  topology:
+    topology_name: "os-single-new"
+    resource_groups:
+      - resource_group_name: "os-server-new"
+        resource_group_type: "openstack"
+        resource_definitions:
+          - name: "${name}"
+            role: "os_server"
+            flavor: "${instanceType}"
+            image: "${image}"
+            count: 1
+            <% if (keyPair) out.print "keypair: ${keyPair}" %>
+            <% if (fipPool) out.print "fip_pool: ${fipPool}" %>
+            <% if (network) out.print "networks:\n              - ${network}" %>
+            <% if (autoIP) out.print "auto_ip: ${autoIP}"%>
+        credentials:
+          filename: "openstack.creds"
+          profile: ci-rhos

@@ -1,0 +1,22 @@
+${index}_${providerType}:
+  topology:
+    topology_name: "beaker-slave"
+    resource_groups:
+    - resource_group_name: "beaker-slaves"
+      resource_group_type: "beaker"
+      resource_definitions:
+      - role: "bkr_server"<% if ( job_group ) "\n        job_group: \"${job_group}\"" %>
+        whiteboard: "${whiteboard ? whiteboard : 'Dynamically provisioned'}"
+        recipesets:
+        - name: "${name}"
+          distro: "${distro}"
+          arch: "${arch}"
+          variant: "${variant}"
+          count: 1<% if (bkr_data) out.print "\n          bkr_data: ${bkr_data}" %><% if (hostrequires) {
+              out.print '\n          hostrequires:'
+              hostrequires.each { entry ->
+                   entry.eachWithIndex { k, v, index->
+                       if (index == 0) out.print "\n          - ${k}: \"${v}\"" else out.print "\n            ${k}: \"${v}\""
+                   }
+              }
+          }%>
