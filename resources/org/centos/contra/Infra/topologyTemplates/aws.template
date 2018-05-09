@@ -1,0 +1,20 @@
+${index}_${providerType}:
+  topology:
+    topology_name: "ec2-new"
+    resource_groups:
+      - resource_group_name: "aws"
+        resource_group_type: "aws"
+        resource_definitions:
+          - name: "${name}"
+            flavor: "${instance_type}"
+            role: "aws_ec2"
+            region: "${region}"
+            image: "${ami}"
+            security_group: "${security_groups ? security_groups : 'default' }"
+            count: 1
+            <% if (vpc_subnet_id) out.print "vpc_subnet_id: ${vpc_subnet_id}" %>
+            <% if (key_pair) out.print "keypair: ${key_pair}" %>
+            <% if (assign_public_ip) out.print "assign_public_ip: ${assign_public_ip}" %>
+        credentials:
+            filename: "aws.creds"
+            profile: default
