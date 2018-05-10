@@ -1,0 +1,17 @@
+<p>The createDslContainers variable handles creating the necessary containers which are utilized by the contraDSL. There are two containers which are created:</p>
+
+<ul>
+<li><code>linchpin-executor</code> - This container is utilized to perform all linchpin commands, including provisioning and tearing down infrastructure described in the configuration yaml file.</li>
+
+<li><code>ansible-executor</code> - This container is utilized to perform all Ansible playbook execution. This includes infrastructure provisioning and test execution.</li>
+</ul>
+
+<h1 id="examples">Examples</h1>
+
+<h2 id="defaultusage">Default usage:</h2>
+
+<pre><code>createDslContainers podName: &lt;pod name&gt;,
+                    dockerRepoURL: &lt;url for Openshift docker repo&gt;,
+                    openshiftNamespace: &lt;Openshift project namespace&gt;,
+                    openshiftServiceAccount: &lt;Openshift Service Account&gt;
+</code></pre>
