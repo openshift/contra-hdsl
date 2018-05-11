@@ -1,0 +1,45 @@
+<p>The destroyInfra variable handles tearing down infrastructure deployed by the contraDSL.</p>
+
+<h1 id="requirements">Requirements</h1>
+
+<p>Usage of this variable assumes that infrastructure has been deployed via the use of the <code>deployInfra</code> variable.</p>
+
+<p>Usage of this variable also requires the configuration of credentials on the Jenkins master as applicable for each resource type.</p>
+
+<h1 id="examples">Examples:</h1>
+
+<h2 id="basicusage">Basic usage:</h2>
+
+<pre><code>destroyInfra
+</code></pre>
+
+<p>or</p>
+
+<pre><code>destroyInfra()
+</code></pre>
+
+<p>This usage assumes the following for each provider type defined in the configuration file:</p>
+
+<ul>
+<li>A secret file credential is configured in Jenkins which contains the necessary data to authenticate against the provider service
+
+
+<ul>
+<li>The secret file for authentication is named in the format <code>&lt;provider&gt;.creds</code></li></ul>
+</li>
+</ul>
+
+<h2 id="advancedusage">Advanced usage:</h2>
+
+<h3 id="enableverboseoutputfromlinchpinprovisioning">Enable verbose output from linchpin provisioning</h3>
+
+<pre><code>destroyInfra verbose: true
+</code></pre>
+
+<h3 id="providearbitraryvaluesforcredentialandsshkeyids">Provide arbitrary values for credential and SSH key IDs</h3>
+
+<pre><code>destroyInfra &lt;provider&gt;_credentials_id: &lt;credentials file ID&gt;,
+            &lt;provider&gt;_ssh_id: &lt;SSH private key ID&gt;
+</code></pre>
+
+<p>There should be one <code>&lt;provider&gt;_credentials_id</code> key per provider.</p>
