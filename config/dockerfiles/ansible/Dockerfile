@@ -1,12 +1,11 @@
-FROM alpine:latest
+FROM fedora:27
 
 LABEL maintainer="rnester@redhat.com, cmays@redhat.com"
 LABEL version="0.0.1"
 LABEL description="A container to run test scripts"
 
-RUN apk update && \
-    apk add ansible && \
-    mkdir /etc/ansible
+RUN dnf install -y ansible && \
+    dnf install -y fedpkg libselinux-python standard-test-roles
 
 VOLUME /ansible
 
