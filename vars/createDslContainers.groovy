@@ -1,5 +1,15 @@
-
-def call(Map config, Closure body){
+/**
+ * A method which executes the podTemplate step to create the required ansible-executor and linchpin-executor containers defined.
+ * @param config: A map that holds configuration parameters.
+ * @param config.podName: String # The name for the pod
+ * @param config.openshiftServiceAccount: String  # The name service account on Openshift which will deploy the pod
+ * @param config.dockerRepoURL: String # The URL to the openshift URL containing the docker images
+ * @param config.ansibleExecutorTag: String # The tag to use for the ansible container
+ * @param config.linchinExecutorTag: String # The tag to use for the linchin container
+ * @param body - The remainder of the Jenkinsfile which will be executed.
+ * @return
+ */
+def call(Map<String, ?> config=[:], Closure body){
 
     String podName = config.podName ?: "contraDSL-${UUID.randomUUID()}"
     String openshiftServiceAccount = config.openshiftServiceAccount ?: 'jenkins'

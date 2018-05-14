@@ -1,5 +1,11 @@
 import org.centos.contra.Infra.Utils
 
+/**
+ * A method to tear down infrastructure instances.
+ * @param config: An optional map that holds configuration parameters. Valid parameters are:
+ * @param config.verbose: A key with a Boolean value which enables verbose output from the `linchpin destroy` execution.
+ * @return
+ */
 def call(Map<String, ?> config=[:]){
     def infraUtils = new Utils()
 
