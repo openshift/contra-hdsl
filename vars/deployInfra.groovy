@@ -3,6 +3,12 @@ import org.centos.contra.Infra.Providers.Beaker
 import org.centos.contra.Infra.Providers.Openstack
 import org.centos.contra.Infra.Utils
 
+/**
+ *
+ * @param config: An optional map that holds configuration parameters.
+ * @param config.verbose: A key with a Boolean value which enables verbose output from the `linchpin up` execution.
+ * @return
+ */
 def call(Map<String, ?> config=[:]){
 
     env.HOME = "/root"
