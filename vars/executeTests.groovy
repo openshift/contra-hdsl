@@ -1,6 +1,13 @@
 import org.centos.contra.Infra.Utils
 
-def call(Boolean verbose) {
+/**
+ * A method that executes tests by calling executeInAnsible for each test playbook defined in the configuration
+ * yaml file.
+ * @param config: An optional map that holds configuration parameters.
+ * @param config.verbose: A key with a Boolean value which enables verbose output from the ansible-playbook execution.
+ * @return
+ */
+def call(Map<String, String> config = [:]) {
 
     def infraUtils = new Utils()
 
@@ -26,7 +33,7 @@ def call(Boolean verbose) {
         configData.tests.playbooks.each { LinkedHashMap playbook ->
             String playbook_path = playbook.location
             String paramString = "-e ${playbook.vars.iterator().join(', -e ')}"
-            infraUtils.executeInAnsible(playbook_path, paramString, verbose)
+            infraUtils.executeInAnsible(playbook_path, paramString, config.verbose as Boolean)
         }
     }
 
