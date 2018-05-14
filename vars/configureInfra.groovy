@@ -1,6 +1,13 @@
 import org.centos.contra.Infra.Utils
 
-def call(Map<String, String> config = [:]) {
+/**
+ * A method that configures provisioned infrastructure instances by calling executeInAnsible for each configuration
+ * playbook defined in the configuration yaml file.
+ * @param config: An optional map that holds configuration parameters.
+ * @param config.verbose: A key with a Boolean value which enables verbose output from the `ansible-playbook ` execution.
+ * @return
+ */
+def call(Map<String, ?> config = [:]) {
 
     def infraUtils = new Utils()
 
