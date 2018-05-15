@@ -32,7 +32,6 @@ def call(Map<String, ?> config=[:]){
                 infraUtils.createSSHKeyFile('aws', 'ansible-executor', config.aws_ssh_id as String)
             }
         }
-
         if (configData.infra.provision.cloud.openstack){
             def openstack_instances = infraUtils.createOpenstackInstances(configData.infra.provision.cloud.openstack as HashMap)
             if (openstack_instances){

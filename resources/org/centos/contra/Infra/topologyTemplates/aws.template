@@ -6,15 +6,15 @@ ${index}_${providerType}:
         resource_group_type: "aws"
         resource_definitions:
           - name: "${name}"
-            flavor: "${instance_type}"
+            flavor: "${instanceType}"
             role: "aws_ec2"
             region: "${region}"
             image: "${ami}"
-            security_group: "${security_groups ? security_groups : 'default' }"
+            security_group: "${securityGroups ? securityGroups : 'default' }"
             count: 1
-            <% if (vpc_subnet_id) out.print "vpc_subnet_id: ${vpc_subnet_id}" %>
-            <% if (key_pair) out.print "keypair: ${key_pair}" %>
-            <% if (assign_public_ip) out.print "assign_public_ip: ${assign_public_ip}" %>
+            <% if (vpcSubnetId) out.print "vpc_subnet_id: ${vpcSubnetId}" %>
+            <% if (keyPair) out.print "keypair: ${keyPair}" %>
+            <% if (assignPublicIp) out.print "assign_public_ip: ${assignPublicIp}" %>
         credentials:
             filename: "aws.creds"
             profile: default

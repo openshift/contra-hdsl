@@ -534,9 +534,6 @@ def generateInventory(instanceList, context, inventoryFilename="inventory", repl
             
             inventoryFileContent+="\n"
 
-            if (instance.providerType == 'aws') {
-
-            }
             // track types or tags
             if (types.containsKey(instance.providerType)) {
                 types[instance.providerType].add(instance.name)
@@ -610,15 +607,15 @@ static
 def getBinding(Aws providerInstance, int topologyIndex){
     return [
             index               : topologyIndex,
-            provider_type       : providerInstance.getProviderType(),
+            providerType        : providerInstance.getProviderType(),
             name                : providerInstance.getName(),
-            instance_type       : providerInstance.getInstance_type(),
+            instanceType        : providerInstance.getInstance_type(),
             region              : providerInstance.getRegion(),
             ami                 : providerInstance.getAmi(),
-            security_groups     : providerInstance.getSecurity_groups(),
-            assign_public_ip    : providerInstance.getAssignPublicIP(),
-            key_pair            : providerInstance.getKeyPair(),
-            vpc_subnet_id       : providerInstance.getVpcSubnetID()
+            securityGroups      : providerInstance.getSecurity_groups(),
+            assignPublicIp      : providerInstance.getAssignPublicIP(),
+            keyPair             : providerInstance.getKeyPair(),
+            vpcSubnetId         : providerInstance.getVpcSubnetID()
 
     ] as LinkedHashMap
 }
@@ -633,13 +630,13 @@ static
 def getBinding(Beaker providerInstance, int topologyIndex){
     return [
         index           : topologyIndex,
-        provider_type   : providerInstance.getProviderType(),
-        job_group       : providerInstance.getJob_group(),
+        providerType    : providerInstance.getProviderType(),
+        jobGroup        : providerInstance.getJob_group(),
         whiteboard      : providerInstance.getWhiteboard(),
         distro          : providerInstance.getDistro(),
         arch            : providerInstance.getArch(),
         variant         : providerInstance.getVariant(),
-        bkr_data        : providerInstance.getBkr_data(),
+        bkrData         : providerInstance.getBkr_data(),
         hostrequires    : providerInstance.getHostrequires(),
         keyvalue        : providerInstance.getKeyvalue(),
         name            : providerInstance.getName()
