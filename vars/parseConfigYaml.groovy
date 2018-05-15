@@ -12,7 +12,7 @@ import groovy.json.JsonBuilder
 
 def call(Map <String,?> config=[:]){
 
-    configuration_file = config.filename ?: '.contra.yml'
+    String configuration_file = config.filename ?: '.contra.yml'
 
     def yaml = readYaml file: "${WORKSPACE}/${configuration_file}" as String
 

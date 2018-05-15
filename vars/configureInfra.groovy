@@ -32,7 +32,7 @@ def call(Map<String, ?> config = [:]) {
     if ( configData.infra.configure.playbooks ) {
         configData.infra.configure.playbooks.each { LinkedHashMap playbook ->
             String playbook_path = playbook.location
-            String paramString = "-e ${playbook.vars.iterator().join(', -e ')}"
+            String paramString = playbook.vars ? "-e ${playbook.vars.iterator().join(', -e ')}" : ""
             infraUtils.executeInAnsible(playbook_path, paramString, config.verbose as Boolean)
         }
     }
