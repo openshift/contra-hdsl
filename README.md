@@ -43,7 +43,7 @@ For each provider, (aws, openstack, beaker, etc.) the default behavior is that t
 ### Usage in your project
 The contraDSL makes use of a yaml format configuration file. This file should reside at the root of your workspace in Jenkins and can be stored in your project repository, or another repository, provided that it ultimately arrives at the root of your workspace.
 
-The default name for this file is ```.contra.yml```, but any file name can be used. See the docs for further details on using non-default file names.
+The default name for this file is ```contra.yml```, but any file name can be used. See the docs for further details on using non-default file names.
 
 ## Links
 * ContraDSL GitHub repository:
