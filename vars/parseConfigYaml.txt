@@ -12,7 +12,7 @@
 <pre><code>parseConfigYaml()
 </code></pre>
 
-<p>This usage assumes the presence of a <code>.contra.yml</code> file in the root of <code>WORKSPACE</code> for the Jenkins job.</p>
+<p>This usage assumes the presence of a <code>contra.yml</code> file in the root of <code>WORKSPACE</code> for the Jenkins job.</p>
 
 <h2 id="passinganarbitraryconfigurationfilename">Passing an arbitrary configuration file name:</h2>
 
