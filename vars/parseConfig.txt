@@ -1,22 +1,22 @@
-<p>The parseConfigYaml variable handles parsing the yaml configuration file used in the contraDSL library. This yaml file is converted to JSON and serialized to a string and assign to the environmental variable <code>configJSON</code></p>
+<p>The parseConfig variable handles parsing the yaml configuration file used in the contraDSL library. This yaml file is converted to JSON and serialized to a string and assign to the environmental variable <code>configJSON</code></p>
 
 <h1 id="examples">Examples:</h1>
 
 <h2 id="usingthedefaultconfigurationfilename">Using the default configuration file name:</h2>
 
-<pre><code>parseConfigYaml
+<pre><code>parseConfig
 </code></pre>
 
 <p>or</p>
 
-<pre><code>parseConfigYaml()
+<pre><code>parseConfig()
 </code></pre>
 
-<p>This usage assumes the presence of a <code>.contra.yml</code> file in the root of <code>WORKSPACE</code> for the Jenkins job.</p>
+<p>This usage assumes the presence of a <code>contra.yml</code> file in the root of <code>WORKSPACE</code> for the Jenkins job.</p>
 
 <h2 id="passinganarbitraryconfigurationfilename">Passing an arbitrary configuration file name:</h2>
 
-<pre><code>parseConfigYaml('path/to/filename.yml')
+<pre><code>parseConfig('path/to/filename.yml')
 </code></pre>
 
 <p>This usage allows for the passing of a specific configuration file. If the file doesn't exist in the root of the <code>WORKSPACE</code>, the path to the configuration file should be relative to the root of <code>WORKSPACE</code> for the Jenkins job.</p>

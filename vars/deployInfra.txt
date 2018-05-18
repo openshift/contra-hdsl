@@ -2,7 +2,7 @@
 
 <h1 id="requirements">Requirements</h1>
 
-<p>Usage of this variable assumes that a config yaml file has been parsed with <code>parseConfigYaml</code> or equivalent JSON has been assigned to the environmental variable <code>configJSON</code> prior to its usage.</p>
+<p>Usage of this variable assumes that a config yaml file has been parsed with <code>parseConfig</code> or equivalent JSON has been assigned to the environmental variable <code>configJSON</code> prior to its usage.</p>
 
 <p>Usage of this variable also requires the configuration of credentials and SSH keys on the Jenkins master as applicable for each resource type.</p>
 
