@@ -13,6 +13,24 @@ This repo contains a Jenkins shared library, referred to as the contraDSL, which
 
 ## Configuration
 
+### OpenShift Configuration
+#### Container Templates
+The contraDSL makes use of two containers, ```linchpin-executor``` and ```ansible-executor```. These containers must exist within OpenShift and can be added by performing the follwoing steps:
+* Checkout the contra-hdsl repo, if you haven't already: ```$ git clone https://github.com/openshift/contra-hdsl.git```
+* Login to your OpenShift instance: ```$ oc login```
+* Select your project namespace: ```$ oc project <your project namespace>```
+* Change to the root of the contra-hdsl repo: ```$ cd /path/to/contra-hdsl```
+* Add the ```linchpin-executor``` buildconfig template: ```$ oc create -f config/s2i/linchpin/linchpin-buildconfig-template.yaml```
+* Add the ```ansible-executor``` buildconfig template: ```$ oc create -f config/s2i/ansible/ansible-buildconfig-template.yaml```
+
+#### Service Account Permissions
+In order to execute some tasks within the ```linchpin-executor``` and ```ansible-executor``` containers, it may be necessary to add your service account to the ```anyuid``` scc.
+
+```$ oc adm policy add-scc-to-user anyuid -z jenkins```
+
+See [this link](https://docs.openshift.org/latest/admin_guide/manage_scc.html#enable-dockerhub-images-that-require-root) for more details.
+
+
 ### Global Library Configuration
 The contraDSL needs to be configured on the Jenkins master. The necessary steps are below.
 * Click on ```Jenkins -> Manage Jenkins -> Configure System```
@@ -51,4 +69,4 @@ The default name for this file is ```contra.yml```, but any file name can be use
   * https://github.com/openshift/contra-hdsl
 * ContraDSL sample repository:
   * This repo contains sample yaml configuration files, along with Jenkinsfile examples
-  * https://github.com/robnester-rh/hdsl_test
+  * https://github.com/robnester-rh/hdsl_sample
