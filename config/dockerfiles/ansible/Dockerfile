@@ -1,11 +1,15 @@
 FROM fedora:27
 
-LABEL maintainer="rnester@redhat.com, cmays@redhat.com"
-LABEL version="0.0.1"
+LABEL maintainer="rnester@redhat.com, cmays@redhat.com, ari@redhat.com"
+LABEL version="0.0.2"
 LABEL description="A container to run test scripts"
 
-RUN dnf install -y ansible && \
-    dnf install -y fedpkg libselinux-python standard-test-roles
+RUN dnf install -y ansible \
+        fedpkg \
+        libselinux-python \
+        standard-test-roles \
+        rsync \
+        && dnf clean all
 
 VOLUME /ansible
 
