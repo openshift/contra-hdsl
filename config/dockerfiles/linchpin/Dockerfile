@@ -1,4 +1,4 @@
-FROM fedora:latest
+FROM fedora:27
 
 LABEL maintainer="rnester@redhat.com, cmays@redhat.com"
 LABEL version="0.0.1"
