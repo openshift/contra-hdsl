@@ -8,8 +8,8 @@ RUN dnf install -y ansible \
         fedpkg \
         libselinux-python \
         standard-test-roles \
-        rsync \
-        && dnf clean all
+        rsync \ &&
+     dnf clean all
 
 VOLUME /ansible
 
