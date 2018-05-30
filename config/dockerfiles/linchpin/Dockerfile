@@ -26,7 +26,8 @@ RUN curl -L -O http://download.devel.redhat.com/rel-eng/RCMTOOLS/rcm-tools-fedor
         libxml2-python \
         libxslt-python \
         python-devel \
-        python-krbV
+        python-krbV \ &&
+     dnf clean all
 
 WORKDIR /etc/pki/ca-trust/source/anchors/
 
