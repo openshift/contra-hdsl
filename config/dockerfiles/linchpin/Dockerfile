@@ -1,33 +1,21 @@
-FROM fedora:27
+FROM contrainfra/linchpin-executor:v1.0.0
 
-LABEL maintainer="rnester@redhat.com, cmays@redhat.com"
-LABEL version="0.0.1"
+LABEL maintainer="rnester@redhat.com, cmays@redhat.com, ari@redhat.com"
+LABEL version="0.0.2"
 LABEL description="A container to set up infrastructure instances"
 
 WORKDIR /etc/yum.repos.d/
 
 RUN curl -L -O http://download.devel.redhat.com/rel-eng/RCMTOOLS/rcm-tools-fedora.repo && \
-    dnf install -y git \
-        krb5-workstation \
+    dnf install -y krb5-workstation \
         python3-requests-kerberos \
         rhpkg \
         python3-bugzilla \
         brewkoji \
         brewkoji-stage \
-        wget \
-        libffi-devel \
-        openssl-devel \
-        libyaml-devel \
-        gmp-devel \
-        libselinux-python \
-        make \
-        gcc \
         redhat-rpm-config \
-        libxml2-python \
-        libxslt-python \
-        python-devel \
-        python-krbV \ &&
-     dnf clean all
+        python-krbV \
+     && dnf clean all
 
 WORKDIR /etc/pki/ca-trust/source/anchors/
 
