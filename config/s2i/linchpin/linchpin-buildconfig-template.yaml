@@ -47,7 +47,7 @@ parameters:
 - description: Git repository with Dockerfile and slave entrypoint.
   displayName: Repostory URL
   name: REPO_URL
-  value: https://gitlab.sat.lab.tlv.redhat.com/contra/hdsl.git
+  value: https://github.com/openshift/contra-hdsl.git
 - description: The subdirectory inside the repo, containing the Dockerfile
   displayName: Context Directory
   name: REPO_CONTEXTDIR
