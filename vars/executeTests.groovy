@@ -17,7 +17,7 @@ def call(Map<String, String> config = [:]) {
     if (configData.tests.repo) {
         String url = configData.tests.repo.url
         String branch = configData.tests.repo.branch
-        String folder = configData.tests.repo.destiation_folder ?: null
+        String folder = configData.tests.repo.destination_folder ?: null
         if ( folder ){
             dir(folder){
                 git branch: branch, url: url
@@ -25,7 +25,6 @@ def call(Map<String, String> config = [:]) {
         } else {
             git branch: branch, url: url
         }
-
     }
 
     // Let's execute our playbooks!
