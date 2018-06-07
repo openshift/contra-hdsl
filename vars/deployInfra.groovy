@@ -11,8 +11,6 @@ import org.centos.contra.Infra.Utils
  */
 def call(Map<String, ?> config=[:]){
 
-    env.HOME = "/root"
-
     def infraUtils = new Utils()
 
     def configData = readJSON text: env.configJSON
@@ -63,7 +61,7 @@ def call(Map<String, ?> config=[:]){
     }
 
 
-    infraUtils.executeInLinchpin("up", "--creds-path /keys/linchpin", config.verbose as Boolean)
+    infraUtils.executeInLinchpin("up", "--creds-path ${WORKSPACE}/linchpin/creds", config.verbose as Boolean)
 
     def instance_information = infraUtils.parseDistilledContext()
 
