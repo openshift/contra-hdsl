@@ -17,7 +17,7 @@ def call(Map<String, ?> config = [:]) {
     if (configData.infra.configure.repo) {
         String url = configData.infra.configure.repo.url
         String branch = configData.infra.configure.repo.branch
-        String folder = configData.infra.configure.repo.destiation_folder ?: null
+        String folder = configData.infra.configure.repo.destination_folder ?: null
         if ( folder ){
             dir(folder){
                 git branch: branch, url: url
@@ -25,7 +25,6 @@ def call(Map<String, ?> config = [:]) {
         } else {
             git branch: branch, url: url
         }
-
     }
 
     // Let's execute our playbooks!
@@ -36,5 +35,4 @@ def call(Map<String, ?> config = [:]) {
             infraUtils.executeInAnsible(playbook_path, paramString, config.verbose as Boolean)
         }
     }
-
 }
