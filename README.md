@@ -15,7 +15,7 @@ This repo contains a Jenkins shared library, referred to as the contraDSL, which
 
 ### OpenShift Configuration
 #### Container Templates
-The contraDSL makes use of two containers, ```linchpin-executor``` and ```ansible-executor```. These containers must exist within OpenShift and can be added by performing the follwoing steps:
+The contraDSL makes use of two containers, ```linchpin-executor``` and ```ansible-executor```. These containers must exist within OpenShift and can be added by performing the following steps:
 * Checkout the contra-hdsl repo, if you haven't already: ```$ git clone https://github.com/openshift/contra-hdsl.git```
 * Login to your OpenShift instance: ```$ oc login```
 * Select your project namespace: ```$ oc project <your project namespace>```
