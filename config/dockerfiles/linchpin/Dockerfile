@@ -1,4 +1,4 @@
-FROM contrainfra/linchpin-executor:v1.0.0
+FROM contrainfra/linchpin-executor:v1.1.0
 
 LABEL maintainer="rnester@redhat.com, cmays@redhat.com, ari@redhat.com" \
       version="0.0.2" \
@@ -12,6 +12,8 @@ COPY ansible.cfg /etc/ansible.cfg
 COPY krb5.conf /etc/krb5.conf
 COPY beaker.conf /etc/beaker/client.conf
 COPY bin/ ${APP_ROOT}/bin/
+
+USER root
 
 WORKDIR /etc/yum.repos.d/
 
