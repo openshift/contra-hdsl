@@ -30,6 +30,8 @@ objects:
       git:
         ref: ${REPO_REF}
         uri: ${REPO_URL}
+      sourceSecret:
+        name: contra-hdsl-deploy-key
       type: Git
     strategy:
       dockerStrategy:
@@ -47,7 +49,7 @@ parameters:
 - description: Git repository with Dockerfile and slave entrypoint.
   displayName: Repostory URL
   name: REPO_URL
-  value: https://github.com/openshift/contra-hdsl.git
+  value: git@github.com:openshift/contra-hdsl.git
 - description: The subdirectory inside the repo, containing the Dockerfile
   displayName: Context Directory
   name: REPO_CONTEXTDIR

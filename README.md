@@ -23,14 +23,11 @@ The contraDSL makes use of two containers, ```linchpin-executor``` and ```ansibl
 * Add the ```linchpin-executor``` buildconfig template: ```$ oc create -f config/s2i/linchpin/linchpin-buildconfig-template.yaml```
 * Add the ```ansible-executor``` buildconfig template: ```$ oc create -f config/s2i/ansible/ansible-buildconfig-template.yaml```
 
-#### Service Account Permissions
-In order to execute some tasks within the ```linchpin-executor``` and ```ansible-executor``` containers, it may be necessary to add your service account to the ```anyuid``` scc.
+#### Secret Configuration
+The buildconfig template for the ```linchpin-executor``` container needs to access the contra-hdsl repository and as such needs to use SSH key authentication. 
 
-```$ oc adm policy add-scc-to-user anyuid -z jenkins```
-
-See [this link](https://docs.openshift.org/latest/admin_guide/manage_scc.html#enable-dockerhub-images-that-require-root) for more details.
-
-
+The template is configured to use a source secret named ```contra-hdsl-deploy-key``` which should be an SSH key which has permissions to pull from the contra-hdsl repository.
+  
 ### Global Library Configuration
 The contraDSL needs to be configured on the Jenkins master. The necessary steps are below.
 * Click on ```Jenkins -> Manage Jenkins -> Configure System```
@@ -39,10 +36,9 @@ The contraDSL needs to be configured on the Jenkins master. The necessary steps 
 * For ```Default Version```, enter ```master```
 * Ensure that ```Load Implicitly``` is checked.
 * Under ```Retrieval Method``` select ```Modern SCM```
-* Under ```Source Code Management``` select ```GitHub```
-* In the ```Credentials``` dropdown, select or add your ssh key that has access to the repository on GitHub
-* Enter ```openshift``` in the ```Owner``` field
-* In the ```Repository``` dropdown, select ```contra-hdsl```
+* Under ```Source Code Management``` select ```Git```
+* In the ```Credentials``` dropdown, select or add the ssh key that has access to the repository on GitHub
+* In the ```Project Repository``` field, select ```git@github.com:openshift/contra-hdsl.git```
 * Click ```Save``` at the bottom of the page.
 
 ### Credential configuration
