@@ -6,19 +6,23 @@
 
 <h1 id="examples">Examples:</h1>
 
-<h2 id="basicusage">Basic usage:</h2>
-
+<h2 id="basic-usage">Basic usage:</h2>
 <pre><code>executeTests
 </code></pre>
-
 <p>or</p>
-
 <pre><code>executeTests()
 </code></pre>
 
-<h2 id="enablingverboseoutput">Enabling verbose output:</h2>
-
+<h2 id="enabling-verbose-output">Enabling verbose output:</h2>
 <pre><code>executeTests verbose: true
 </code></pre>
 
-<p>This usage enables verbose output from the execution of Ansible playbooks.</p>
+<h2 id="adding-base-dir">Specifying base directory:</h2>
+<p>It is possible to specify a base directory, relative to the workspace root, which will be prefixed to the playbook path. This can be useful in situations where a repository containing configuration playbooks is checked out dynamically from the jenkinsfile.</p>
+<pre><code>executeTests baseDir: "baseDir"
+</code></pre>
+
+<h2 id="overriding-adding-variables">Overriding or Adding Variables:</h2>
+<p>It is possible to override, or add additional variables to, the existing vars from the configuration file, when calling this method</p>
+<pre><code>executeTests vars: [var1: value, var2: value2, var3: value3]
+</code></pre>
