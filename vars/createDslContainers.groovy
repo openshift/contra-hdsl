@@ -6,6 +6,8 @@
  * @param config.dockerRepoURL: String # The URL to the openshift URL containing the docker images
  * @param config.ansibleExecutorTag: String # The tag to use for the ansible container
  * @param config.linchinExecutorTag: String # The tag to use for the linchin container
+ * @param config.linchpinContainerName: String # the name of the linchpin container to be created
+ * @param config.ansibleContainerName: String # the name of the ansible container to be created
  * @param body - The remainder of the Jenkinsfile which will be executed.
  * @return
  */
@@ -17,6 +19,9 @@ def call(Map<String, ?> config=[:], Closure body){
     String dockerRepoURL = config.dockerRepoURL ?: '172.30.1.1:5000'
     String ansibleExecutorTag = config.ansibleExecutorTag ?: 'stable'
     String linchpinExecutorTag = config.linchpinExecutorTag ?: 'stable'
+    String linchpinContainerName = config.linchpinContainerName ?: 'linchpin-executor'
+    String ansibleContainerName = config.ansibleContainerName ?: 'ansible-executor'
+
 
     podTemplate(name: podName,
             label: podName,
@@ -33,13 +38,13 @@ def call(Map<String, ?> config=[:], Closure body){
                             command: '',
                             workingDir: '/workDir'),
                     // This adds the ansible-executor container to the
-                    containerTemplate(name: 'ansible-executor',
+                    containerTemplate(name: ansibleContainerName,
                             image: "${dockerRepoURL}/${openshiftNamespace}/ansible-executor:${ansibleExecutorTag}",
                             ttyEnabled: true,
                             command: '',
                             workingDir: '/workDir'),
                     // This adds the rpmbuild test container to the pod.
-                    containerTemplate(name: 'linchpin-executor',
+                    containerTemplate(name: linchpinContainerName,
                             alwaysPullImage: true,
                             image: "${dockerRepoURL}/${openshiftNamespace}/linchpin-executor:${linchpinExecutorTag}",
                             ttyEnabled: true,
