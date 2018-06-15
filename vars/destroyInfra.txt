@@ -36,6 +36,11 @@
 <pre><code>destroyInfra verbose: true
 </code></pre>
 
+<h3 id="overriding-linchpin-executor">Overriding the container where linchpin will execute in pod:</h3>
+<p>It is possible to override the container name in the executing pod where linchpin is run from. </p>
+<pre><code>destroyInfra linchpinContainerName: "my-linchpin-executor"
+</code></pre>
+
 <h3 id="providearbitraryvaluesforcredentialandsshkeyids">Provide arbitrary values for credential and SSH key IDs</h3>
 
 <pre><code>destroyInfra &lt;provider&gt;_credentials_id: &lt;credentials file ID&gt;,
