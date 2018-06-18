@@ -35,7 +35,9 @@ def call(Map<String, ?> config = [:]) {
     if ( configData.infra.configure.playbooks ) {
         configData.infra.configure.playbooks.each { LinkedHashMap playbook ->
             HashMap playbookParams = playbook.vars ?: [:]
-            playbookParams  << (config.vars as HashMap)
+            if (config.vars){
+                playbookParams  << (config.vars as HashMap)
+            }
             String paramString = playbookParams ? "-e ${playbookParams.entrySet().iterator().join(' -e ')}" : ""
             String playbook_path = config.baseDir ? "${config.baseDir}/${playbook.location}" : playbook.location
             infraUtils.executeInAnsible(playbook_path, paramString, config.verbose as Boolean)
