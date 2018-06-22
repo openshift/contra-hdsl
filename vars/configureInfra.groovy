@@ -9,6 +9,8 @@ import org.centos.contra.Infra.Utils
  *                             prepended to the playbook location
  *                  * vars: A key with a HashMap of vars which will be appended to, or overwrite vars from the configuraiton
  *                          file.
+ *                  * ansibleContainerName: a key with a String value which indicates the container name where ansible
+ *                          will be executed from.
  * @return
  */
 def call(Map<String, ?> config = [:]) {
@@ -40,7 +42,7 @@ def call(Map<String, ?> config = [:]) {
             }
             String paramString = playbookParams ? "-e ${playbookParams.entrySet().iterator().join(' -e ')}" : ""
             String playbook_path = config.baseDir ? "${config.baseDir}/${playbook.location}" : playbook.location
-            infraUtils.executeInAnsible(playbook_path, paramString, config.verbose as Boolean)
+            infraUtils.executeInAnsible(playbook_path, paramString, config.verbose as Boolean, config.ansibleContainerName)
         }
     }
 }
