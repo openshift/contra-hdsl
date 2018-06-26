@@ -28,9 +28,6 @@ def call(Map<String, ?> config=[:]){
             def aws_instances = infraUtils.createAwsInstances(configData.infra.provision.cloud.aws as HashMap)
             if (aws_instances) {
                 infraInstances.addAll(aws_instances)
-                aws_instances.eachWithIndex { Aws instance, index ->
-                    infraUtils.generateTopology(instance, index, "${WORKSPACE}/linchpin")
-                }
                 // Create our aws credential auth file, and our aws ssh key
                 infraUtils.createKeyFile('aws', config.aws_credentials_id as String)
                 infraUtils.createSSHKeyFile('aws', ansibleContainerName, config.aws_ssh_id as String)
@@ -40,10 +37,6 @@ def call(Map<String, ?> config=[:]){
             def openstack_instances = infraUtils.createOpenstackInstances(configData.infra.provision.cloud.openstack as HashMap)
             if (openstack_instances){
                 infraInstances.addAll(openstack_instances)
-                openstack_instances.eachWithIndex { Openstack instance, index ->
-                    infraUtils.generateTopology(instance, index, "${WORKSPACE}/linchpin")
-                }
-
                 // Create our openstack credential auth file, and our openstack ssh key
                 infraUtils.createKeyFile('openstack', config.openstack_credentials_id as String)
                 infraUtils.createSSHKeyFile('openstack', ansibleContainerName, config.openstack_ssh_id as String)
@@ -56,16 +49,17 @@ def call(Map<String, ?> config=[:]){
             ArrayList<Beaker> beaker_instances = infraUtils.createBeakerInstances(configData.infra.provision.baremetal.beaker as HashMap)
             if (beaker_instances) {
                 infraInstances.addAll(beaker_instances)
-                beaker_instances.eachWithIndex { Beaker instance, int index ->
-                    infraUtils.generateTopology(instance, index, "${WORKSPACE}/linchpin")
-                }
-
                 infraUtils.createKeyFile('beaker', config.beaker_credentials_id as String)
                 infraUtils.createSSHKeyFile('beaker', ansibleContainerName, config.beaker_ssh_id as String)
             }
         }
     }
 
+    infraInstances.sort{it.providerType}
+
+    infraInstances.eachWithIndex { Object instance, int index ->
+        infraUtils.generateTopology(instance, index, "${WORKSPACE}/linchpin")
+    }
 
     infraUtils.executeInLinchpin("up", "--creds-path ${WORKSPACE}/linchpin/creds", config.verbose as Boolean, config.linchpinContainerName)
 
