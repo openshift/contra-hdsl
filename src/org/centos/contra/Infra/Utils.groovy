@@ -481,18 +481,14 @@ def parseDistilledContext(String context_filename="linchpin.distilled") {
  * @param context
  * @return
  */
-def getInstanceFromContext(instance, context) {
+static def getInstanceFromContext(instance, context) {
     def instance_context = [:]
     context.each { k,v ->
-        if ( instance instanceof Openstack ){
-            if (v[0].name == "${instance.name}1") {
+        String name = instance instanceof Openstack ? "${instance.getNameWithUUID()}1" : instance.getName()
+        if (v[0].name == name) {
                 instance_context = v[0]
-            }
-        } else {
-            if (v[0].name == instance.name) {
-                instance_context = v[0]
-            }
         }
+        instance_context.name = instance.getName()
     }
     return instance_context
 }
@@ -661,7 +657,7 @@ def getBinding(Openstack providerInstance, int topologyIndex){
     return [
             index           : topologyIndex,
             providerType    : providerInstance.getProviderType(),
-            name            : providerInstance.getName(),
+            name            : providerInstance.getNameWithUUID(),
             instanceType    : providerInstance.getFlavor(),
             image           : providerInstance.getImage(),
             keyPair         : providerInstance.getKeyPair(),
