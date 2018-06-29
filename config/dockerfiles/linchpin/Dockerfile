@@ -1,50 +1,51 @@
-FROM fedora:latest
+FROM contrainfra/linchpin-executor:v1.1.0
 
-LABEL maintainer="rnester@redhat.com, cmays@redhat.com"
-LABEL version="0.0.1"
-LABEL description="A container to set up infrastructure instances"
+LABEL maintainer="rnester@redhat.com, cmays@redhat.com, ari@redhat.com" \
+      version="0.0.2" \
+      description="A container to set up infrastructure instances"
+
+
+ENV APP_ROOT=/linchpin/ \
+    PATH=${APP_ROOT}/bin:${PATH} HOME=${APP_ROOT}
+
+COPY ansible.cfg /etc/ansible.cfg
+COPY krb5.conf /etc/krb5.conf
+COPY beaker.conf /etc/beaker/client.conf
+COPY bin/ ${APP_ROOT}/bin/
+
+USER root
 
 WORKDIR /etc/yum.repos.d/
 
 RUN curl -L -O http://download.devel.redhat.com/rel-eng/RCMTOOLS/rcm-tools-fedora.repo && \
-    dnf install -y git \
-        krb5-workstation \
+    #########################################################################################
+    # Added the following temporarily for https://bugzilla.redhat.com/show_bug.cgi?id=1479795
+    cd /usr/lib/python2.7/site-packages/urllib3/packages/ && \
+    rm -rf ssl_match_hostname* ||: && \
+    #########################################################################################
+    dnf install -y krb5-workstation \
         python3-requests-kerberos \
         rhpkg \
         python3-bugzilla \
         brewkoji \
         brewkoji-stage \
-        wget \
-        libffi-devel \
-        openssl-devel \
-        libyaml-devel \
-        gmp-devel \
-        libselinux-python \
-        make \
-        gcc \
         redhat-rpm-config \
-        libxml2-python \
-        libxslt-python \
-        python-devel \
-        python-krbV
-
-WORKDIR /etc/pki/ca-trust/source/anchors/
-
-RUN wget https://password.corp.redhat.com/legacy.crt --no-check-certificate && \
-    wget https://password.corp.redhat.com/RH-IT-Root-CA.crt --no-check-certificate && \
-    wget https://engineering.redhat.com/Eng-CA.crt --no-check-certificate && \
+        python-krbV && \
+    dnf clean all && \
+    wget https://password.corp.redhat.com/legacy.crt --no-check-certificate --directory-prefix=/etc/pki/ca-trust/source/anchors/ && \
+    wget https://password.corp.redhat.com/RH-IT-Root-CA.crt --no-check-certificate --directory-prefix=/etc/pki/ca-trust/source/anchors/ && \
+    wget https://engineering.redhat.com/Eng-CA.crt --no-check-certificate --directory-prefix=/etc/pki/ca-trust/source/anchors/ && \
     update-ca-trust extract && \
-    pip install git+git://github.com/CentOS-PaaS-SIG/linchpin.git#egg=linchpin[beaker]
+    mkdir -p ${APP_ROOT} && \
+    chmod -R u+x ${APP_ROOT}/bin && \
+    chgrp -R 0 ${APP_ROOT} && \
+    chmod -R g=u ${APP_ROOT} /etc/passwd
 
-WORKDIR /root/
+### Containers should NOT run as root as a good practice
+USER 10001
+WORKDIR ${APP_ROOT}
 
-COPY ansible.cfg .ansible.cfg
+### user name recognition at runtime w/ an arbitrary uid - for OpenShift deployments
+ENTRYPOINT [ "uid_entrypoint" ]
 
-WORKDIR /linchpin/
-
-COPY krb5.conf /etc/krb5.conf
-COPY beaker.conf /etc/beaker/client.conf
-
-USER root
-
-CMD ["tail", "-f", "/dev/null"]
+CMD run

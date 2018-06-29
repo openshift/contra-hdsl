@@ -304,9 +304,12 @@ def createOpenstackInstances(HashMap<String, String>openstackData){
  * @param command - The linchpin command to execute. Typically this should be "up" or "destroy"
  * @param options - Options to be passed to the linchpin command
  * @param verbose - whether to include -vvv to the execution of the linchpin command
+ * @param linchpinContainerName - name of linchpin container in executing pod. default is 'linchpin-executor'.
  * @return
  */
-def executeInLinchpin(String command, String options, Boolean verbose){
+def executeInLinchpin(String command, String options, Boolean verbose, String linchpinContainerName){
+
+    String containerName = linchpinContainerName ?: 'linchpin-executor'
 
     // Kubernetes plugin does not let containers inherit
     // env vars from host. We force them in.
@@ -314,7 +317,7 @@ def executeInLinchpin(String command, String options, Boolean verbose){
 
     try {
         withEnv(containerEnv){
-            container('linchpin-executor'){
+            container(containerName){
                 // Create our linchpin.conf file and configure it to be able to create distilled output
                 writeFile file: "${WORKSPACE}/linchpin/linchpin.conf", text: """[lp]\ndistill_data = True\n\n[evars]\ngenerate_resources = False\n"""
                 writeFile file: "${WORKSPACE}/localhost", text: "localhost ansible_connection=local"
@@ -327,8 +330,10 @@ def executeInLinchpin(String command, String options, Boolean verbose){
                 }
             }
         }
-        echo("Waiting 30 seconds for systems to be available")
-        sleep(new Long(30))
+        if (command=="up"){
+            echo("Waiting 30 seconds for systems to be available")
+            sleep(new Long(30))
+        }
     } catch (err) {
         throw err
     } finally {
@@ -340,17 +345,20 @@ def executeInLinchpin(String command, String options, Boolean verbose){
  * Execute playbooks in the ansible container
  * @param playbook_path
  * @param paramString
+ * @param verbose - whether to include -vvv to the execution of the ansible-playbook command
+ * @param ansibleContainerName - name of ansible container in executing pod. default is 'ansible-executor'.
  * @return
  */
-def executeInAnsible(String playbook_path, String paramString, Boolean verbose){
+def executeInAnsible(String playbook_path, String paramString, Boolean verbose, String ansibleContainerName){
 
+    String containerName = ansibleContainerName ?: 'ansible-executor'
     // Kubernetes plugin does not let containers inherit
     // env vars from host. We force them in.
     def containerEnv = env.getEnvironment().collect { key, value -> return "${key}=${value}" }
 
     try {
         withEnv(containerEnv){
-            container('ansible-executor'){
+            container(containerName){
                 if (verbose){
                     sh """ansible-playbook -vvv -i ${WORKSPACE}/inventory ${WORKSPACE}/${playbook_path} ${paramString}"""
                 } else {
@@ -410,13 +418,14 @@ def generateTopology(providerInstance, int index, String pinfile_directory){
  */
 def createKeyFile(String providerType, String credentialFileId=null){
     String credentialFile = credentialFileId ?: "${providerType}.creds"
+    String creds_store_path = "${WORKSPACE}/linchpin/creds"
     container('linchpin-executor'){
         withCredentials([file(credentialsId: credentialFile, variable: 'CREDENTIAL_FILE_NAME')]) {
             sh """
             #!/bin/bash -x
-            mkdir -p /keys/linchpin
-            cp ${CREDENTIAL_FILE_NAME} /keys/linchpin/${providerType}.creds
-            chmod 0600 /keys/linchpin/${providerType}.creds
+            mkdir -p ${creds_store_path}
+            cp ${CREDENTIAL_FILE_NAME} ${creds_store_path}/${providerType}.creds
+            chmod 0600 ${creds_store_path}/${providerType}.creds
             """
         }
     }
@@ -424,14 +433,14 @@ def createKeyFile(String providerType, String credentialFileId=null){
 
 /**
  * A method to create an SSH key for a given providerType within a specified container
- * By default, keys are stored at /keys/ssh
+ * By default, keys are stored at /ansible/keys
  * @param providerType
  * @param containerName
  * @param sshId
  * @return
  */
 def createSSHKeyFile(String providerType, String containerName, String sshFileId=null){
-    String key_store_path='/root/.ssh'
+    String key_store_path="${WORKSPACE}/ansible/keys"
     String sshFile = sshFileId ?: "${providerType}.ssh"
     container(containerName){
         withCredentials([sshUserPrivateKey(
@@ -442,16 +451,13 @@ def createSSHKeyFile(String providerType, String containerName, String sshFileId
             sh """
             #!/bin/bash -x
             mkdir -p ${key_store_path}
-            chmod 700 ${key_store_path}
             cp ${SSH_FILE_NAME} ${key_store_path}/${providerType}.ssh
             """
         }
         if ( env.SSH_PASSPHRASE ) {
             sh "ssh-keygen -p -f ${key_store_path}/${providerType}.ssh -N ${SSH_PASSPHRASE}"
         }
-
         sh "chmod 0600 ${key_store_path}/${providerType}.ssh"
-
     }
 }
 
@@ -475,18 +481,14 @@ def parseDistilledContext(String context_filename="linchpin.distilled") {
  * @param context
  * @return
  */
-def getInstanceFromContext(instance, context) {
+static def getInstanceFromContext(instance, context) {
     def instance_context = [:]
     context.each { k,v ->
-        if ( instance instanceof Openstack ){
-            if (v[0].name == "${instance.name}1") {
+        String name = instance instanceof Openstack ? "${instance.getNameWithUUID()}1" : instance.getName()
+        if (v[0].name == name) {
                 instance_context = v[0]
-            }
-        } else {
-            if (v[0].name == instance.name) {
-                instance_context = v[0]
-            }
         }
+        instance_context.name = instance.getName()
     }
     return instance_context
 }
@@ -496,10 +498,10 @@ def getInstanceFromContext(instance, context) {
  * @param instanceList
  * @param context
  * @param inventoryFilename
- * @param replace
+ * @param keyStorePath
  * @return
  */
-def generateInventory(instanceList, context, inventoryFilename="inventory", replace=false) {
+def generateInventory(instanceList, context, inventoryFilename="inventory", keyStorePath="ansible/keys") {
     def context_by_name = [:]
     def DOMAIN_KEYS = [
             'aws'       : 'public_ip',
@@ -510,6 +512,7 @@ def generateInventory(instanceList, context, inventoryFilename="inventory", repl
     def tags = [:]
 
     String inventoryFile = "${WORKSPACE}/${inventoryFilename}"
+    String sshStorePath = "${WORKSPACE}/${keyStorePath}"
     String inventoryFileContent = ""
 
     if (fileExists(inventoryFile)){
@@ -525,13 +528,13 @@ def generateInventory(instanceList, context, inventoryFilename="inventory", repl
                     "ansible_host=${context_by_name[instance.name][DOMAIN_KEYS[instance.providerType]]}"
             
             if ( instance.keyPair ){
-                inventoryFileContent+=" ansible_ssh_private_key_file=/root/.ssh/${instance.providerType}.ssh"
+                inventoryFileContent+=" ansible_ssh_private_key_file=${sshStorePath}/${instance.providerType}.ssh"
             }
             
             if ( instance.user ){
                 inventoryFileContent+=" ansible_user=${instance.user}"
             }
-            
+
             inventoryFileContent+="\n"
 
             // track types or tags
@@ -570,7 +573,6 @@ def generateInventory(instanceList, context, inventoryFilename="inventory", repl
         }
         inventoryFileContent+="\n"
     }
-
     writeFile file: inventoryFile, text: inventoryFileContent
 }
 
@@ -580,18 +582,19 @@ def generateInventory(instanceList, context, inventoryFilename="inventory", repl
  * @return
  */
 def getTemplateText(providerInstance){
+    String resourcePath = "org/centos/contra/Infra/topologyTemplates"
     if ( providerInstance instanceof Aws) {
-        String templateText = libraryResource 'org/centos/contra/Infra/topologyTemplates/aws.template'
+        String templateText = libraryResource "${resourcePath}/aws.template"
         return templateText
     }
 
     if (providerInstance instanceof Beaker){
-        String templateText = libraryResource 'org/centos/contra/Infra/topologyTemplates/beaker.template'
+        String templateText = libraryResource "${resourcePath}/beaker.template"
         return templateText
     }
 
     if (providerInstance instanceof Openstack){
-        String templateText = libraryResource 'org/centos/contra/Infra/topologyTemplates/openstack.template'
+        String templateText = libraryResource "${resourcePath}/openstack.template"
         return templateText
     }
 
@@ -654,7 +657,7 @@ def getBinding(Openstack providerInstance, int topologyIndex){
     return [
             index           : topologyIndex,
             providerType    : providerInstance.getProviderType(),
-            name            : providerInstance.getName(),
+            name            : providerInstance.getNameWithUUID(),
             instanceType    : providerInstance.getFlavor(),
             image           : providerInstance.getImage(),
             keyPair         : providerInstance.getKeyPair(),
