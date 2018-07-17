@@ -4,7 +4,6 @@ class Openstack implements Serializable{
     String name
     String flavor
     String image
-    String uuid
     String region
     String keyPair
     String fipPool
@@ -28,15 +27,10 @@ class Openstack implements Serializable{
         this.name = name
         this.flavor = flavor
         this.image = image
-        this.uuid = UUID.randomUUID().toString().split('-')[0]
     }
 
     String getName() {
         return name
-    }
-
-    String getNameWithUUID() {
-        return "${name}-${uuid}"
     }
 
     String getFlavor() {
@@ -145,7 +139,7 @@ class Openstack implements Serializable{
                 return "no"
             }
         }
-
+        
         return autoIP
     }
 
