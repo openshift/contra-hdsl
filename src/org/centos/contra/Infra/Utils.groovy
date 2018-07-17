@@ -304,9 +304,12 @@ def createOpenstackInstances(HashMap<String, String>openstackData){
  * @param command - The linchpin command to execute. Typically this should be "up" or "destroy"
  * @param options - Options to be passed to the linchpin command
  * @param verbose - whether to include -vvv to the execution of the linchpin command
+ * @param linchpinContainerName - name of linchpin container in executing pod. default is 'linchpin-executor'.
  * @return
  */
-def executeInLinchpin(String command, String options, Boolean verbose){
+def executeInLinchpin(String command, String options, Boolean verbose, String linchpinContainerName){
+
+    String containerName = linchpinContainerName ?: 'linchpin-executor'
 
     // Kubernetes plugin does not let containers inherit
     // env vars from host. We force them in.
@@ -314,7 +317,7 @@ def executeInLinchpin(String command, String options, Boolean verbose){
 
     try {
         withEnv(containerEnv){
-            container('linchpin-executor'){
+            container(containerName){
                 // Create our linchpin.conf file and configure it to be able to create distilled output
                 writeFile file: "${WORKSPACE}/linchpin/linchpin.conf", text: """[lp]\ndistill_data = True\n\n[evars]\ngenerate_resources = False\n"""
                 writeFile file: "${WORKSPACE}/localhost", text: "localhost ansible_connection=local"
@@ -342,16 +345,20 @@ def executeInLinchpin(String command, String options, Boolean verbose){
  * Execute playbooks in the ansible container
  * @param playbook_path
  * @param paramString
+ * @param verbose - whether to include -vvv to the execution of the ansible-playbook command
+ * @param ansibleContainerName - name of ansible container in executing pod. default is 'ansible-executor'.
  * @return
  */
-def executeInAnsible(String playbook_path, String paramString, Boolean verbose){
+def executeInAnsible(String playbook_path, String paramString, Boolean verbose, String ansibleContainerName){
+
+    String containerName = ansibleContainerName ?: 'ansible-executor'
     // Kubernetes plugin does not let containers inherit
     // env vars from host. We force them in.
     def containerEnv = env.getEnvironment().collect { key, value -> return "${key}=${value}" }
 
     try {
         withEnv(containerEnv){
-            container('ansible-executor'){
+            container(containerName){
                 if (verbose){
                     sh """ansible-playbook -vvv -i ${WORKSPACE}/inventory ${WORKSPACE}/${playbook_path} ${paramString}"""
                 } else {
@@ -474,18 +481,14 @@ def parseDistilledContext(String context_filename="linchpin.distilled") {
  * @param context
  * @return
  */
-def getInstanceFromContext(instance, context) {
+static def getInstanceFromContext(instance, context) {
     def instance_context = [:]
     context.each { k,v ->
-        if ( instance instanceof Openstack ){
-            if (v[0].name == "${instance.name}1") {
+        String name = instance instanceof Openstack ? "${instance.getNameWithUUID()}1" : instance.getName()
+        if (v[0].name == name) {
                 instance_context = v[0]
-            }
-        } else {
-            if (v[0].name == instance.name) {
-                instance_context = v[0]
-            }
         }
+        instance_context.name = instance.getName()
     }
     return instance_context
 }
@@ -654,7 +657,7 @@ def getBinding(Openstack providerInstance, int topologyIndex){
     return [
             index           : topologyIndex,
             providerType    : providerInstance.getProviderType(),
-            name            : providerInstance.getName(),
+            name            : providerInstance.getNameWithUUID(),
             instanceType    : providerInstance.getFlavor(),
             image           : providerInstance.getImage(),
             keyPair         : providerInstance.getKeyPair(),
