@@ -7,6 +7,10 @@ import org.centos.contra.Infra.Utils
  *
  * @param config: An optional map that holds configuration parameters.
  * @param config.verbose: A key with a Boolean value which enables verbose output from the `linchpin up` execution.
+ * @param config.linchpinContainerName: a key with a String value which indicates the container name where linchpin
+ *                                      will be executed from.
+ * @param config.ansibleContainerName: a key with a String value which indicates the container name where ansible
+ *                                      will be executed from.
  * @return
  */
 def call(Map<String, ?> config=[:]){
@@ -15,6 +19,8 @@ def call(Map<String, ?> config=[:]){
 
     def configData = readJSON text: env.configJSON
 
+    String ansibleContainerName = config.ansibleContainerName ?: 'ansible-executor'
+
     ArrayList infraInstances = new ArrayList()
 
     if (configData.infra.provision.cloud) {
@@ -22,25 +28,18 @@ def call(Map<String, ?> config=[:]){
             def aws_instances = infraUtils.createAwsInstances(configData.infra.provision.cloud.aws as HashMap)
             if (aws_instances) {
                 infraInstances.addAll(aws_instances)
-                aws_instances.eachWithIndex { Aws instance, index ->
-                    infraUtils.generateTopology(instance, index, "${WORKSPACE}/linchpin")
-                }
                 // Create our aws credential auth file, and our aws ssh key
                 infraUtils.createKeyFile('aws', config.aws_credentials_id as String)
-                infraUtils.createSSHKeyFile('aws', 'ansible-executor', config.aws_ssh_id as String)
+                infraUtils.createSSHKeyFile('aws', ansibleContainerName, config.aws_ssh_id as String)
             }
         }
         if (configData.infra.provision.cloud.openstack){
             def openstack_instances = infraUtils.createOpenstackInstances(configData.infra.provision.cloud.openstack as HashMap)
             if (openstack_instances){
                 infraInstances.addAll(openstack_instances)
-                openstack_instances.eachWithIndex { Openstack instance, index ->
-                    infraUtils.generateTopology(instance, index, "${WORKSPACE}/linchpin")
-                }
-
                 // Create our openstack credential auth file, and our openstack ssh key
                 infraUtils.createKeyFile('openstack', config.openstack_credentials_id as String)
-                infraUtils.createSSHKeyFile('openstack', 'ansible-executor', config.openstack_ssh_id as String)
+                infraUtils.createSSHKeyFile('openstack', ansibleContainerName, config.openstack_ssh_id as String)
             }
         }
     }
@@ -50,18 +49,19 @@ def call(Map<String, ?> config=[:]){
             ArrayList<Beaker> beaker_instances = infraUtils.createBeakerInstances(configData.infra.provision.baremetal.beaker as HashMap)
             if (beaker_instances) {
                 infraInstances.addAll(beaker_instances)
-                beaker_instances.eachWithIndex { Beaker instance, int index ->
-                    infraUtils.generateTopology(instance, index, "${WORKSPACE}/linchpin")
-                }
-
                 infraUtils.createKeyFile('beaker', config.beaker_credentials_id as String)
-                infraUtils.createSSHKeyFile('beaker', 'ansible-executor', config.beaker_ssh_id as String)
+                infraUtils.createSSHKeyFile('beaker', ansibleContainerName, config.beaker_ssh_id as String)
             }
         }
     }
 
+    infraInstances.sort{it.providerType}
 
-    infraUtils.executeInLinchpin("up", "--creds-path ${WORKSPACE}/linchpin/creds", config.verbose as Boolean)
+    infraInstances.eachWithIndex { Object instance, int index ->
+        infraUtils.generateTopology(instance, index, "${WORKSPACE}/linchpin")
+    }
+
+    infraUtils.executeInLinchpin("up", "--creds-path ${WORKSPACE}/linchpin/creds", config.verbose as Boolean, config.linchpinContainerName)
 
     def instance_information = infraUtils.parseDistilledContext()
 

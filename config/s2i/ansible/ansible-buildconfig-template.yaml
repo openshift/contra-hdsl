@@ -26,11 +26,8 @@ objects:
     triggers:
     - type: ConfigChange
     source:
-      contextDir: ${REPO_CONTEXTDIR}
-      git:
-        ref: ${REPO_REF}
-        uri: ${REPO_URL}
-      type: Git
+      type: DockerFile
+      dockerfile: "FROM contrainfra/ansible-executor:v1.1.0"
     strategy:
       dockerStrategy:
         env:
@@ -38,21 +35,9 @@ objects:
             value: ansible-executor
           - name: GIT_SSL_NO_VERIFY
             value: 'true'
+        noCache: true
       type: Docker
     output:
       to:
         kind: ImageStreamTag
         name: ansible-executor:latest
-parameters:
-- description: Git repository with Dockerfile and slave entrypoint.
-  displayName: Repostory URL
-  name: REPO_URL
-  value: https://github.com/CentOS-PaaS-SIG/contra-env-sample-project.git
-- description: The subdirectory inside the repo, containing the Dockerfile
-  displayName: Context Directory
-  name: REPO_CONTEXTDIR
-  value: config/dockerfiles/ansible
-- description: The git ref or tag to use for customization.
-  displayName: Git Reference
-  name: REPO_REF
-  value: master
