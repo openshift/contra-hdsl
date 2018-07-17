@@ -10,22 +10,8 @@
 
 <h2 id="defaultusage">Default usage:</h2>
 
-<pre>
-<code>createDslContainers podName: &lt;pod name&gt;,
+<pre><code>createDslContainers podName: &lt;pod name&gt;,
                     dockerRepoURL: &lt;url for Openshift docker repo&gt;,
                     openshiftNamespace: &lt;Openshift project namespace&gt;,
                     openshiftServiceAccount: &lt;Openshift Service Account&gt;
-</code>
-</pre>
-
-<h2 id="overriding-ansible-executor">Overriding the ansible and/or linchpin container name(s):</h2>
-<pre>
-<code>createDslContainers podName: &lt;pod name&gt;,
-                    dockerRepoURL: &lt;url for Openshift docker repo&gt;,
-                    openshiftNamespace: &lt;Openshift project namespace&gt;,
-                    openshiftServiceAccount: &lt;Openshift Service Account&gt;
-                    linchpinContainerName: "my-linchpin-executor"
-                    ansibleContainerName: "my-ansible-executor"
-</code>
-</pre>
-
+</code></pre>
