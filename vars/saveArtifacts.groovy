@@ -1,3 +1,20 @@
+/**
+ * A method to store artifacts within the job on the Master.
+ * @param config: An optional map that holds configuration parameters. The following are used keys in config:
+ *                  @filesToSave - either a string of comma separated filenames or masks, or a list of strings of
+ *                      filenames or masks to save. These are appended to any filenames or masks to save in the
+ *                      contra.yml file.
+ *                  @filesToExclude - either a string of comma separated filenames or masks, or a list of strings of
+ *                      filenames or masks to save. These are appended to any filenames or masks to exclude in the
+ *                      contra.yml file.
+ *                  @allowEmptyArchive - Boolean indicating whether to allow for an empty archive. Default: true
+ *                  @fingerprint - Boolean indicating whether to fingerprint files. Default: false
+ *                  @onlyIfSuccessful - Boolean indicating whether archiving should occur only when the job succeeds.
+ *                      Default: false
+ *                  @defaultExcludes - Boolean indicating whether to exclude the default excludes in Jenkins.
+ *                      See http://ant.apache.org/manual/dirtasks.html#defaultexcludes for a list of default excludes.
+ * @return
+ */
 def call(Map <String, ?> config=[:]) {
 
     def configData = readJSON text: env.configJSON
