@@ -1,0 +1,27 @@
+<p>The saveArtifacts variable handles storing the specified set of files from the workspace with the job within the Jenkins master.</p>
+
+<h1 id="examples">Examples:</h1>
+
+<h2 id="usingthedefaultconfigurationfilename">Using the default invocation:</h2>
+
+<pre><code>saveArtifacts
+</code></pre>
+
+<p>or</p>
+
+<pre><code>saveArtifacts()
+</code></pre>
+
+<p>This usage assumes the presence of a <code>contra.yml</code> file in the root of <code>WORKSPACE</code> for the Jenkins job.</p>
+
+<h2 id="passingarbitraryconfigurationparameters">Passing arbitrary configuration parameters:</h2>
+
+<pre><code>saveArtifacts filesToSave: 'foo.txt, foo/**/bar.txt',
+               filesToExclude: ['bar.txt', 'baz.txt'],
+               allowEmptyArchive: false,
+               fingerprint: true,
+               onlyIfSuccessful: true,
+               defaultExcludes: false
+</code></pre>
+
+<p>This usage allows for the passing of a specific configuration parameters. The optional parameters above can be used independently of one another</p>
