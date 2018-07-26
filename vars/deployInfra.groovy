@@ -61,7 +61,7 @@ def call(Map<String, ?> config=[:]){
         infraUtils.generateTopology(instance, index, "${WORKSPACE}/linchpin")
     }
 
-    infraUtils.executeInLinchpin("up", "--creds-path ${WORKSPACE}/linchpin/creds", config.verbose as Boolean, config.linchpinContainerName)
+    infraUtils.executeInLinchpin("up", "--creds-path \"${WORKSPACE}/linchpin/creds\"", config.verbose as Boolean, config.linchpinContainerName)
 
     def instance_information = infraUtils.parseDistilledContext()
 
