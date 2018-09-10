@@ -360,9 +360,9 @@ def executeInAnsible(String playbook_path, String paramString, Boolean verbose, 
         withEnv(containerEnv){
             container(containerName){
                 if (verbose){
-                    sh """ansible-playbook -vvv -i ${WORKSPACE}/inventory ${WORKSPACE}/${playbook_path} ${paramString}"""
+                    sh """ansible-playbook -vvv -i \"${WORKSPACE}/inventory\" \"${WORKSPACE}/${playbook_path}\" ${paramString}"""
                 } else {
-                    sh """ansible-playbook -i ${WORKSPACE}/inventory ${WORKSPACE}/${playbook_path} ${paramString}"""
+                    sh """ansible-playbook -i \"${WORKSPACE}/inventory\" \"${WORKSPACE}/${playbook_path}\" ${paramString}"""
                 }
             }
         }
@@ -423,9 +423,9 @@ def createKeyFile(String providerType, String credentialFileId=null){
         withCredentials([file(credentialsId: credentialFile, variable: 'CREDENTIAL_FILE_NAME')]) {
             sh """
             #!/bin/bash -x
-            mkdir -p ${creds_store_path}
-            cp ${CREDENTIAL_FILE_NAME} ${creds_store_path}/${providerType}.creds
-            chmod 0600 ${creds_store_path}/${providerType}.creds
+            mkdir -p "${creds_store_path}"
+            cp "${CREDENTIAL_FILE_NAME}" "${creds_store_path}/${providerType}.creds"
+            chmod 0600 "${creds_store_path}/${providerType}.creds"
             """
         }
     }
@@ -450,14 +450,18 @@ def createSSHKeyFile(String providerType, String containerName, String sshFileId
                 usernameVariable: 'SSH_USERNAME')]) {
             sh """
             #!/bin/bash -x
-            mkdir -p ${key_store_path}
-            cp ${SSH_FILE_NAME} ${key_store_path}/${providerType}.ssh
+            mkdir -p "${key_store_path}"
+            cp "${SSH_FILE_NAME}" "${key_store_path}/${providerType}.ssh"
             """
         }
         if ( env.SSH_PASSPHRASE ) {
-            sh "ssh-keygen -p -f ${key_store_path}/${providerType}.ssh -N ${SSH_PASSPHRASE}"
+            sh """
+            ssh-keygen -p -f "${key_store_path}/${providerType}.ssh" -N ${SSH_PASSPHRASE}
+            """
         }
-        sh "chmod 0600 ${key_store_path}/${providerType}.ssh"
+        sh """
+        chmod 0600 "${key_store_path}/${providerType}.ssh"
+        """
     }
 }
 
@@ -528,7 +532,7 @@ def generateInventory(instanceList, context, inventoryFilename="inventory", keyS
                     "ansible_host=${context_by_name[instance.name][DOMAIN_KEYS[instance.providerType]]}"
             
             if ( instance.keyPair ){
-                inventoryFileContent+=" ansible_ssh_private_key_file=${sshStorePath}/${instance.providerType}.ssh"
+                inventoryFileContent+=" ansible_ssh_private_key_file=\"${sshStorePath}/${instance.providerType}.ssh\""
             }
             
             if ( instance.user ){
