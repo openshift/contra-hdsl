@@ -37,8 +37,7 @@ The contraDSL needs to be configured on the Jenkins master. The necessary steps 
 * Ensure that ```Load Implicitly``` is checked.
 * Under ```Retrieval Method``` select ```Modern SCM```
 * Under ```Source Code Management``` select ```Git```
-* In the ```Credentials``` dropdown, select or add the ssh key that has access to the repository on GitHub
-* In the ```Project Repository``` field, select ```git@github.com:openshift/contra-hdsl.git```
+* In the ```Project Repository``` field, select ```https://github.com/openshift/contra-hdsl.git```
 * Click ```Save``` at the bottom of the page.
 
 ### Credential configuration
