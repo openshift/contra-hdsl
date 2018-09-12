@@ -15,18 +15,24 @@ This repo contains a Jenkins shared library, referred to as the contraDSL, which
 
 ### OpenShift Configuration
 #### Container Templates
-The contraDSL makes use of two containers, ```linchpin-executor``` and ```ansible-executor```. These containers must exist within OpenShift and can be added by performing the following steps:
+The contraDSL makes use of three containers, ```linchpin-executor```,  ```ansible-executor```, and ```jenkins-contra-slave```. These containers must exist within OpenShift and can be added by performing the following steps:
 * Checkout the contra-hdsl repo, if you haven't already: ```$ git clone https://github.com/openshift/contra-hdsl.git```
 * Login to your OpenShift instance: ```$ oc login```
 * Select your project namespace: ```$ oc project <your project namespace>```
 * Change to the root of the contra-hdsl repo: ```$ cd /path/to/contra-hdsl```
 * Add the ```linchpin-executor``` buildconfig template: ```$ oc create -f config/s2i/linchpin/linchpin-buildconfig-template.yaml```
 * Add the ```ansible-executor``` buildconfig template: ```$ oc create -f config/s2i/ansible/ansible-buildconfig-template.yaml```
+* Add the ```jenkins-contra-slave``` buildconfig template: ```$ oc create -f config/s2i/jslave/jslave-buildconfig-template.yaml```
 
-#### Secret Configuration
-The buildconfig template for the ```linchpin-executor``` container needs to access the contra-hdsl repository and as such needs to use SSH key authentication. 
+The HDSL expects that these containers should be tagged as "stable" by default, although this can be overridden.
 
-The template is configured to use a source secret named ```contra-hdsl-deploy-key``` which should be an SSH key which has permissions to pull from the contra-hdsl repository.
+To tag these containers as "stable":
+
+```$ oc tag <project namespace>/ansible-executor:latest <project namespace>/ansible-executor:stable```
+
+```$ oc tag <project namespace>/linchpin-executor:latest <project namespace>/linchpin-executor:stable```
+
+```$ oc tag <project namespace>/jenkins-contra-slave:latest <project namespace>/jenkins-contra-slave:stable```
   
 ### Global Library Configuration
 The contraDSL needs to be configured on the Jenkins master. The necessary steps are below.
@@ -37,8 +43,7 @@ The contraDSL needs to be configured on the Jenkins master. The necessary steps 
 * Ensure that ```Load Implicitly``` is checked.
 * Under ```Retrieval Method``` select ```Modern SCM```
 * Under ```Source Code Management``` select ```Git```
-* In the ```Credentials``` dropdown, select or add the ssh key that has access to the repository on GitHub
-* In the ```Project Repository``` field, select ```git@github.com:openshift/contra-hdsl.git```
+* In the ```Project Repository``` field, select ```https://github.com/openshift/contra-hdsl.git```
 * Click ```Save``` at the bottom of the page.
 
 ### Credential configuration

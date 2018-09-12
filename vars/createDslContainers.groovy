@@ -19,6 +19,7 @@ def call(Map<String, ?> config=[:], Closure body){
     String dockerRepoURL = config.dockerRepoURL ?: '172.30.1.1:5000'
     String ansibleExecutorTag = config.ansibleExecutorTag ?: 'stable'
     String linchpinExecutorTag = config.linchpinExecutorTag ?: 'stable'
+    String jenkinsContraSlaveTag = config.jenkinsContraSlaveTag ?: 'stable'
     String linchpinContainerName = config.linchpinContainerName ?: 'linchpin-executor'
     String ansibleContainerName = config.ansibleContainerName ?: 'ansible-executor'
 
@@ -32,7 +33,7 @@ def call(Map<String, ?> config=[:], Closure body){
             containers:[
                     // This adds the custom slave container to the pod. Must be first with name 'jnlp'
                     containerTemplate(name: 'jnlp',
-                            image: "${dockerRepoURL}/${openshiftNamespace}/jenkins-contra-slave:stable",
+                            image: "${dockerRepoURL}/${openshiftNamespace}/jenkins-contra-slave:${jenkinsContraSlaveTag}",
                             ttyEnabled: false,
                             args: '${computer.jnlpmac} ${computer.name}',
                             command: '',
