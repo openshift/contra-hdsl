@@ -33,11 +33,6 @@ To tag these containers as "stable":
 ```$ oc tag <project namespace>/linchpin-executor:latest <project namespace>/linchpin-executor:stable```
 
 ```$ oc tag <project namespace>/jenkins-contra-slave:latest <project namespace>/jenkins-contra-slave:stable```
-
-#### Secret Configuration
-The buildconfig template for the ```linchpin-executor``` container needs to access the contra-hdsl repository and as such needs to use SSH key authentication. 
-
-The template is configured to use a source secret named ```contra-hdsl-deploy-key``` which should be an SSH key which has permissions to pull from the contra-hdsl repository.
   
 ### Global Library Configuration
 The contraDSL needs to be configured on the Jenkins master. The necessary steps are below.
