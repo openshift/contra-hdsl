@@ -603,7 +603,7 @@ def generateInventory(instanceList, context, inventoryFilename="inventory", keyS
             'aws'       : 'public_ip',
             'beaker'    : '',
             'openstack' : 'public_v4',
-            'openshift' : 'EXTERNAL-IP'   //check this with LP team
+            'openshift' : 'CLUSTER-IP'   //curl public IP != CLUSTER_IP/EXTERNAL_IP
     ]
     def types = [:]
     def tags = [:]

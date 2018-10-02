@@ -41,8 +41,6 @@ class Openshift implements Serializable{
       return name;
     }
 
-//check if below are needed
-/*
     String getApiEndpoint(){
       return apiEndpoint;
     }
@@ -58,7 +56,6 @@ class Openshift implements Serializable{
     void setApiToken(String apiToken){
       this.apiToken = apiToken;
     }
-*/
 
     String getApiVersion(){
       return apiToken;
