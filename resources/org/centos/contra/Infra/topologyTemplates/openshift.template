@@ -1,0 +1,38 @@
+${index}_${providerType}:
+  topology:
+    topology_name: "openshift"
+    resource_groups:
+      - resource_group_name: "test1"
+        resource_group_type: "openshift"
+        resource_definitions:
+          - name: "${name}"
+            role: "openshift_inline"
+            data:
+	      - apiVersion: "${apiVersion}"
+	      - kind: "${kind}"
+            metadata:
+              name: "${metadataName}"
+              namespace: "${metadataNamespace}"
+            spec:
+              replicas: "${replicas}"
+              selector:
+                name: "${selectorName}"
+              template:
+                metadata:
+                  labels:
+                    name: "${labelNames}"
+                spec:
+                  containers:
+                    - image: "${containerImage}"
+                      name: "${containerName}"
+                      env:
+                        - name: "${JENKINS_MASTER_URL}"
+                          value: "${jenkinsValue/}"
+                        - name: "${JSLAVE_NAME}"
+                          value: "${jenkinsNodeValue}"
+                  restartPolicy: "$restartPolicy"
+                  securityPolicy:
+                    runAsUser: "${runAsUser}"
+        credentials:
+          api_endpoint: "${apiEndpoint}:8443/"
+          api_token: "${apiToken}"

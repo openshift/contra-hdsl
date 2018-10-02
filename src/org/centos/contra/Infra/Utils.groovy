@@ -4,13 +4,14 @@ import groovy.text.StreamingTemplateEngine
 import org.centos.contra.Infra.Providers.Aws
 import org.centos.contra.Infra.Providers.Beaker
 import org.centos.contra.Infra.Providers.Openstack
-
+import org.centos.contra.Infra.Providers.Openshift
 
 /**
  * Method to create a collection of instances of the AWS cloud provider type based on supplied data
  * @param aws_data
  * @return
  */
+
 def createAwsInstances(HashMap<String,String>aws_data){
 
     ArrayList<Aws> aws_instances = []
@@ -300,6 +301,91 @@ def createOpenstackInstances(HashMap<String, String>openstackData){
 }
 
 /**
+ * Method to create a collection of instances of the OpenShift Cloud Platform provider type based on supplied data
+ * @param openshiftData
+ * @return
+ */
+def createOpenshiftInstances(HashMap<String, String>openshiftData){
+    ArrayList<Openshift> openshiftInstances = []
+
+    openshiftData.instances.each {LinkedHashMap<String, String> instance ->
+        // Setting default params from provider class constructor
+        instance.name = instance.name ?: openshiftData.name
+
+        // 1. set api* values here
+        // 2. check if value for Loadbalancer has to be set(neeed in provider class too)
+        // 3. check if keyPair is required for ocp
+        // 4. "" userData, user
+        def user = null
+        if (openshiftData.user){ user = openshiftData.user }
+        if (instance.user){ user = instance.user }
+        instance.user = user
+
+        if (instance.count){
+            String base_name = instance.name
+            for (i in 1..instance.count){
+                instance.name = "${base_name}_${i}".toString()
+
+                //(skatlapa): set values based on e.g topology
+                Openshift openshift_instance = new Openshift(instance.name)
+                if (instance.apiEndpoint){openshift_instance.setApiEndpoint(instance.api_endpoint)}   //check values naming here
+                if (instance.apiToken){openshift_instance.setApiToken(instance.api_token)}
+                if (instance.kind){openshift_instance.setKind(instance.kind)}
+                if (instance.metadataName){openshift_instance.setMetadataName(instance.metadataName)}    //check conflict of name object here name vs metadataName
+                if (instance.metadataNamespace){openshift_instance.setMetadataNamespace(instance.metadataNamespace)}
+                if (instance.replicas){openshift_instance.setReplicas(instance.replicas)}
+                if (instance.selectorName){openshift_instance.setSelectorname(instance.selectorName)}    //cehck name beginning here
+                if (instance.containerImage){openshift_instance.setContainerImage(instance.containerImage)}
+                if (instance.containerName){openshift_instance.setContainerName(instance.containerName)}
+                if (instance.setJenkinsMasterUrl){openshift_instance.setJenkinsMasterUrl(instance.jenkinsMasterUrl)}
+                if (instance.jenkinsNodeValue){openshift_instance.setJenkinsNodeValue(instance.jenkinsNodeValue)}
+                if (instance.jekinsSlaveName){openshift_instance.setJenkinsSlavename(instance.setJenkinsSlavename)}
+                if (instance.jenkinsMasterUrl){openshift_instance.setJenkinsMasterUrl(instance.jenkinsMasterUrl)}
+                if (instance.restartPolicy){openshift_instance.setRestartPolicy(instance.restartPolicy)}
+                if (instance.runAsUser){openshift_instance.setRunAsUser(instance.runAsUser)}
+                if (instance.runPolicy){openshift_instance.setRunPolicy(instance.runPolicy)}
+                if (instance.type){openshift_instance.setType(instance.type)}
+                if (instance.secret){openshift_instance.setSecret(instance.secret)}
+                if (instance.uri){openshift_instance.setUri(instance.uri)}
+                if (instance.script){openshift_instance.setScript(instance.script)}
+
+                if (instance.labelNames){openshift_instance.setLabelNames(instance.labelNames as ArrayList) }
+
+                openshiftInstances.add(openshift_instance)
+            }
+        } else {
+            Openshift openshift_instance = new Openshift(instance.name)
+            if (instance.apiEndpoint){openshift_instance.setApiEndpoint(instance.api_endpoint)}   //check values naming here
+            if (instance.apiToken){openshift_instance.setApiToken(instance.api_token)}
+            if (instance.kind){openshift_instance.setKind(instance.kind)}
+            if (instance.metadataName){openshift_instance.setMetadataName(instance.metadataName)}    //check conflict of name object here name vs metadataName
+            if (instance.metadataNamespace){openshift_instance.setMetadataNamespace(instance.metadataNamespace)}
+            if (instance.replicas){openshift_instance.setReplicas(instance.replicas)}
+            if (instance.selectorName){openshift_instance.setSelectorname(instance.selectorName)}    //cehck name beginning here
+            if (instance.containerImage){openshift_instance.setContainerImage(instance.containerImage)}
+            if (instance.containerName){openshift_instance.setContainerName(instance.containerName)}
+            if (instance.setJenkinsMasterUrl){openshift_instance.setJenkinsMasterUrl(instance.jenkinsMasterUrl)}
+            if (instance.jenkinsNodeValue){openshift_instance.setJenkinsNodeValue(instance.jenkinsNodeValue)}
+            if (instance.jekinsSlaveName){openshift_instance.setJenkinsSlavename(instance.setJenkinsSlavename)}
+            if (instance.jenkinsMasterUrl){openshift_instance.setJenkinsMasterUrl(instance.jenkinsMasterUrl)}
+            if (instance.restartPolicy){openshift_instance.setRestartPolicy(instance.restartPolicy)}
+            if (instance.runAsUser){openshift_instance.setRunAsUser(instance.runAsUser)}
+            if (instance.runPolicy){openshift_instance.setRunPolicy(instance.runPolicy)}
+            if (instance.type){openshift_instance.setType(instance.type)}
+            if (instance.secret){openshift_instance.setSecret(instance.secret)}
+            if (instance.uri){openshift_instance.setUri(instance.uri)}
+            if (instance.script){openshift_instance.setScript(instance.script)}
+
+            if (instance.labelNames){openshift_instance.setLabelNames(instance.labelNames as ArrayList) }
+
+            openshiftInstances.add(openshift_instance)
+
+        }
+    }
+    return openshiftInstances
+}
+
+/**
  * Method to execute linchpin commands inside of the HDSL linchpin container
  * @param command - The linchpin command to execute. Typically this should be "up" or "destroy"
  * @param options - Options to be passed to the linchpin command
@@ -396,6 +482,10 @@ def generateTopology(providerInstance, int index, String pinfile_directory){
         }
 
         if (providerInstance instanceof Openstack) {
+            topology = createTopology(providerInstance, index)
+        }
+
+        if (providerInstance instanceof Openshift) {
             topology = createTopology(providerInstance, index)
         }
 
@@ -497,6 +587,8 @@ static def getInstanceFromContext(instance, context) {
     return instance_context
 }
 
+//(skatlapa): Check if instance context is needed for OCP
+
 /**
  * A method to generate an inventory file based on the results of linchpin deployment.
  * @param instanceList
@@ -511,6 +603,7 @@ def generateInventory(instanceList, context, inventoryFilename="inventory", keyS
             'aws'       : 'public_ip',
             'beaker'    : '',
             'openstack' : 'public_v4',
+            'openshift' : 'EXTERNAL-IP'   //check this with LP team
     ]
     def types = [:]
     def tags = [:]
@@ -530,11 +623,11 @@ def generateInventory(instanceList, context, inventoryFilename="inventory", keyS
         if (context_by_name[instance.name]) {
             inventoryFileContent+="${instance.name} " +
                     "ansible_host=${context_by_name[instance.name][DOMAIN_KEYS[instance.providerType]]}"
-            
+
             if ( instance.keyPair ){
                 inventoryFileContent+=" ansible_ssh_private_key_file=\"${sshStorePath}/${instance.providerType}.ssh\""
             }
-            
+
             if ( instance.user ){
                 inventoryFileContent+=" ansible_user=${instance.user}"
             }
@@ -599,6 +692,11 @@ def getTemplateText(providerInstance){
 
     if (providerInstance instanceof Openstack){
         String templateText = libraryResource "${resourcePath}/openstack.template"
+        return templateText
+    }
+
+    if (providerInstance instanceof Openshift){
+        String templateText = libraryResource "${resourcePath}/openshift.template"
         return templateText
     }
 
@@ -680,6 +778,43 @@ def getBinding(Openstack providerInstance, int topologyIndex){
 }
 
 /**
+ * A method to return the binding data for a template for the Openshift provider type
+ * @param providerInstance
+ * @param topologyIndex
+ * @return
+ */
+static
+def getBinding(Openshift providerInstance, int topologyIndex){
+    return [
+            index             : topologyIndex,
+            providerType      : providerInstance.getProviderType(),
+            name              : providerInstance.getName(),
+            //instanceType    : providerInstance.getFlavor(), //no need for ocp, but check
+            api_endpoint      : providerInstance.getApiEndpoint(),
+            api_token         : providerInstance.getApiToken(),
+            kind              : providerInstance.getKind(),
+            metadataName      : providerInstance.getMetadataName(),
+            metadataNamespace : providerInstance.getMetadataNamespace(),
+            replicas          : providerInstance.getReplicas(),
+            selectorName      : providerInstance.getSelectorName(),
+            containerImage    : providerInstance.getContainerImage(),
+            containerName     : providerInstance.getContainerName(),
+            jenkinsMasterUrl  : providerInstance.getJenkinsMasterUrl(),
+            jenkinsValue      : providerInstance.getJenkinsValue(),
+            jenkinsSlaveName  : providerInstance.getJenkinsSlavename(),
+            jenkinsNodeValue  : providerInstance.getJenkinsNodeValue(),
+            restartPolicy     : providerInstance.getRestartPolicy(),
+            runAsUser         : providerInstance.getRunAsUser(),
+            runPolicy         : providerInstance.getRunPolicy(),
+            type              : providerInstance.getType(),
+            secret            : providerInstance.getSecret(),
+            uri               : providerInstance.getUri(),
+            script            : providerInstance.getScript(),
+            labelNames        : providerInstance.getLabelNames()
+    ] as LinkedHashMap
+}
+
+/**
  * A method which returns the topology string for the AWS provider type
  * @param providerInstance
  * @param topologyIndex
@@ -708,6 +843,17 @@ def createTopology(Beaker providerInstance, int topologyIndex){
  * @return
  */
 def createTopology(Openstack providerInstance, int topologyIndex){
+    def template = new StreamingTemplateEngine().createTemplate(getTemplateText(providerInstance))
+    return template.make(getBinding(providerInstance, topologyIndex))
+}
+
+/**
+ * A method which returns the topology string for the Openshift provider type
+ * @param providerInstance
+ * @param topologyIndex
+ * @return
+ */
+def createTopology(Openshift providerInstance, int topologyIndex){
     def template = new StreamingTemplateEngine().createTemplate(getTemplateText(providerInstance))
     return template.make(getBinding(providerInstance, topologyIndex))
 }
