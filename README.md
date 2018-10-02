@@ -28,7 +28,7 @@ The contraDSL makes use of three containers, ```linchpin-executor```,  ```ansibl
 The contraDSL requires that the necessary container imagestreams exist.
 * Deploy the ```linchpin-executor``` imagestream: ```$ oc new-app linchpin-executor```
 * Create the ```ansible-executor``` imagestream: ```$ oc new-app ansible-executor```
-* Create the ```jenkins-contra-slave``` imagestream: ```$ oc new-app jenkins-contra-slave-buider```
+* Create the ```jenkins-contra-slave``` imagestream: ```$ oc new-app jenkins-contra-slave-builder```
 
 
 #### Tag Container Imagestreams
