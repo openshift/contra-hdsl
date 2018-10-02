@@ -1,0 +1,19 @@
+<p>The report variable handles reporting test results and other data.</p>
+
+<h1 id="examples">Examples:</h1>
+
+<h2 id="defaultUsage">Using the default invocation:</h2>
+
+<pre><code>report()</code></pre>
+
+<p>This usage assumes the presence of a <code>contra.yml</code> file in the root of <code>WORKSPACE</code> for the Jenkins job.</p>
+
+<h2 id="passingarbitraryconfigurationparameters">Passing arbitrary configuration parameters:</h2>
+
+<pre><code>report recipientEmail: ['carol@example.com', 'susan@example.com'],
+               ccEmail: ['bob@example.com', 'kim@example.com'],
+               bccEmail: 'carl@example.org',
+               replyTo: 'bot@example.com'
+</code></pre>
+
+<p>This usage allows for the passing of a specific configuration parameters. The optional parameters above can be used independently of one another</p>
