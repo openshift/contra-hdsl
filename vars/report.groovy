@@ -21,7 +21,7 @@ def call(Map<String, ?> config = [:]) {
 
 Job Name: ${env.JOB_NAME}
 Job Build #: ${env.BUILD_NUMBER}
-Jobs result: ${currentBuild.currentResult}
+Job result: ${currentBuild.currentResult}
 Job URL: <a href="${BUILD_URL}">${BUILD_URL}</a>
 
 Thank you,
