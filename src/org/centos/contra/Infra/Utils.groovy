@@ -347,7 +347,7 @@ def executeInLinchpin(String command, String options, Boolean verbose, String li
  * @param paramString
  * @param verbose - whether to include -vvv to the execution of the ansible-playbook command
  * @param ansibleContainerName - name of ansible container in executing pod. default is 'ansible-executor'.
- * @return
+ * @returnher
  */
 def executeInAnsible(String playbook_path, String paramString, Boolean verbose, String ansibleContainerName){
 
@@ -363,6 +363,37 @@ def executeInAnsible(String playbook_path, String paramString, Boolean verbose, 
                     sh """ansible-playbook -vvv -i \"${WORKSPACE}/inventory\" \"${WORKSPACE}/${playbook_path}\" ${paramString}"""
                 } else {
                     sh """ansible-playbook -i \"${WORKSPACE}/inventory\" \"${WORKSPACE}/${playbook_path}\" ${paramString}"""
+                }
+            }
+        }
+    } catch (err) {
+        throw err
+    } finally {
+        // Do something
+    }
+}
+
+/**
+ * Execute shell scripts, defaults to ansible container for use with Linchpin
+ * @param script_path
+ * @param paramString
+ * @param verbose - whether to include -vvv to the execution of the Linchpin commands in the shell scripts
+ * @param ansibleContainerName - name of ansible container in executing pod. default is 'ansible-executor'.
+ * @return
+ */
+def executeInShell(String script_path, String paramString, /*Boolean verbose,*/String ansibleContainerName){
+    //(skatlapa): Add Boolean verbose when LP supports the feature/removes hardcoded -v/vvvv
+
+    String containerName = ansibleContainerName ?: 'ansible-executor'   //check if it needs to default to LP-executor
+    // Kubernetes plugin does not let containers inherit
+    // env vars from host. We force them in.
+    def containerEnv = env.getEnvironment().collect { key, value -> return "${key}=${value}" }
+
+    try {
+        withEnv(containerEnv){
+            container(containerName){
+                dir("${WORKSPACE}/linchpin") {    //check against baseDir
+                    sh """bash ${script_path}/${paramString}"""   //currently if defaults from w/s/LP... path/to/script
                 }
             }
         }
@@ -530,11 +561,11 @@ def generateInventory(instanceList, context, inventoryFilename="inventory", keyS
         if (context_by_name[instance.name]) {
             inventoryFileContent+="${instance.name} " +
                     "ansible_host=${context_by_name[instance.name][DOMAIN_KEYS[instance.providerType]]}"
-            
+
             if ( instance.keyPair ){
                 inventoryFileContent+=" ansible_ssh_private_key_file=\"${sshStorePath}/${instance.providerType}.ssh\""
             }
-            
+
             if ( instance.user ){
                 inventoryFileContent+=" ansible_user=${instance.user}"
             }
