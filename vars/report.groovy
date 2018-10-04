@@ -28,16 +28,16 @@ Thank you,
 Contra Productization Automation"""
 
         HashMap<String, ?> mailValues=[
-                to: config.recipientEmail,
+                to: recipientEmails,
                 from: config.fromEmail ?: 'ContraProductizationAutomation',
                 replyTo: config.replyTo ?: 'noreply@redhat.com',
                 subject: subject,
                 body: body
         ]
 
-        if (config.ccEmail){ mailValues.ccEmail = config.ccEmail }
+        if (ccEmails){ mailValues.ccEmail = ccEmails}
 
-        if (config.bccEmail){ mailValues.bccEmail = config.bccEmail }
+        if (bccEmails){ mailValues.bccEmail = bccEmails }
 
         mail(mailValues)
     }
