@@ -347,7 +347,7 @@ def executeInLinchpin(String command, String options, Boolean verbose, String li
  * @param paramString
  * @param verbose - whether to include -vvv to the execution of the ansible-playbook command
  * @param ansibleContainerName - name of ansible container in executing pod. default is 'ansible-executor'.
- * @returnher
+ * @return
  */
 def executeInAnsible(String playbook_path, String paramString, Boolean verbose, String ansibleContainerName){
 
