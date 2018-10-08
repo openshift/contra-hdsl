@@ -392,9 +392,7 @@ def executeInShell(String script_path, String paramString, /*Boolean verbose,*/S
     try {
         withEnv(containerEnv){
             container(containerName){
-                dir("${WORKSPACE}/linchpin") {    //check against baseDir
-                    sh """bash ${script_path}/${paramString}"""   //currently if defaults from w/s/LP... path/to/script
-                }
+                sh """bash ${WORKSPACE}/${script_path} ${paramString}"""
             }
         }
     } catch (err) {
