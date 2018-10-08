@@ -22,7 +22,7 @@ def call(Map<String, ?> config = [:]) {
 Job Name: ${env.JOB_NAME}
 Job Build #: ${env.BUILD_NUMBER}
 Job result: ${currentBuild.currentResult}
-Job URL: <a href="${BUILD_URL}">${BUILD_URL}</a>
+Job URL: ${BUILD_URL}
 
 Thank you,
 Contra Productization Automation"""
