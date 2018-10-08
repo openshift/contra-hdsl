@@ -381,7 +381,7 @@ def executeInAnsible(String playbook_path, String paramString, Boolean verbose, 
  * @param ansibleContainerName - name of ansible container in executing pod. default is 'ansible-executor'.
  * @return
  */
-def executeInShell(String script_path, String paramString, /*Boolean verbose,*/String ansibleContainerName){
+def executeInShell(String script_path, String paramString, Boolean verbose, String ansibleContainerName){
     //(skatlapa): Add Boolean verbose when LP supports the feature/removes hardcoded -v/vvvv
 
     String containerName = ansibleContainerName ?: 'ansible-executor'   //check if it needs to default to LP-executor
