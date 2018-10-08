@@ -382,9 +382,8 @@ def executeInAnsible(String playbook_path, String paramString, Boolean verbose, 
  * @return
  */
 def executeInShell(String script_path, String paramString, Boolean verbose, String ansibleContainerName){
-    //(skatlapa): Add Boolean verbose when LP supports the feature/removes hardcoded -v/vvvv
 
-    String containerName = ansibleContainerName ?: 'ansible-executor'   //check if it needs to default to LP-executor
+    String containerName = ansibleContainerName ?: 'ansible-executor'
     // Kubernetes plugin does not let containers inherit
     // env vars from host. We force them in.
     def containerEnv = env.getEnvironment().collect { key, value -> return "${key}=${value}" }
