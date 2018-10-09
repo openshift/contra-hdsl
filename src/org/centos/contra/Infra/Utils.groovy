@@ -374,10 +374,10 @@ def executeInAnsible(String playbook_path, String paramString, Boolean verbose, 
 }
 
 /**
- * Execute shell scripts, defaults to ansible container for use with Linchpin
+ * Execute shell scripts in the ansible container
  * @param script_path
  * @param paramString
- * @param verbose - whether to include -vvv to the execution of the Linchpin commands in the shell scripts
+ * @param verbose - whether to include -vvv to the execution of the commands/playbooks in the shell scripts
  * @param ansibleContainerName - name of ansible container in executing pod. default is 'ansible-executor'.
  * @return
  */
