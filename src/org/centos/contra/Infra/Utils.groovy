@@ -391,7 +391,11 @@ def executeInShell(String script_path, String paramString, Boolean verbose, Stri
     try {
         withEnv(containerEnv){
             container(containerName){
-                sh """bash ${WORKSPACE}/${script_path} ${paramString}"""
+                String command = """${WORKSPACE}/${script_path}"""
+                if (paramString) {
+                command += " ${paramString}"
+                }
+                sh """bash ${command}"""
             }
         }
     } catch (err) {
