@@ -53,7 +53,7 @@ def call(Map<String, String> config = [:]) {
             if (config.vars){
                 scriptParams  << (config.vars as HashMap)
             }
-            String paramString = scriptParams ? "-${scriptParams.entrySet().iterator().join(' ')}" : ""
+            String paramString = scriptParams ? "-${scriptParams.entrySet().iterator().join(' ')}" : null
             String script_path = config.baseDir ? "${config.baseDir}/${script.location}" : script.location
             infraUtils.executeInShell(script_path, paramString, config.ansibleContainerName)
         }
