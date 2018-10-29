@@ -8,31 +8,31 @@ ${index}_${providerType}:
           - name: "${name}"
             role: "openshift_inline"
             data:
-	      - apiVersion: "${apiVersion}"
+	      - apiVersion: v1
 	      - kind: "${kind}"
             metadata:
-              name: "${metadataName}"
+              name: jenkins-contra-slave 
               namespace: "${metadataNamespace}"
             spec:
               replicas: "${replicas}"
               selector:
-                name: "${selectorName}"
+                name: jenkins-contra-slave
               template:
                 metadata:
                   labels:
-                    name: "${labelNames}"
+                    name: jenkins-contra-slave
                 spec:
                   containers:
-                    - image: "${containerImage}"
-                      name: "${containerName}"
+                    - image: jenkins-continuous-infra-slave:latest
+                      name: jenkins-contra-slave
                       env:
                         - name: "${JENKINS_MASTER_URL}"
                           value: "${jenkinsValue/}"
                         - name: "${JSLAVE_NAME}"
                           value: "${jenkinsNodeValue}"
-                  restartPolicy: "$restartPolicy"
+                  restartPolicy: Always
                   securityPolicy:
-                    runAsUser: "${runAsUser}"
+                    runAsUser: 1000090000
         credentials:
-          api_endpoint: "${apiEndpoint}:8443/"
-          api_token: "${apiToken}"
+          filename: "openshift.yaml"
+          profile: test
