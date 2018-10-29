@@ -28,7 +28,7 @@ ${index}_${providerType}:
                       env:
                         - name: "${JENKINS_MASTER_URL}"
                           value: "${jenkinsValue/}"
-                        - name: "${JSLAVE_NAME}"
+                        - name: "${jenkinsSlaveName}"
                           value: "${jenkinsNodeValue}"
                   restartPolicy: Always
                   securityPolicy:
