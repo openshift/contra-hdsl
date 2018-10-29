@@ -2,22 +2,18 @@ package org.centos.contra.Infra.Providers
 
 class Openshift implements Serializable{
     String name
-    String apiEndpoint
-    String apiToken
-    String apiVersion
     String kind
-    String metadataName   //check if these are better left as name
-    String metadataNamespace    // ""
-    String replicas	//check if to be passed as int
-    String selectorName
+    String metadataNamespace
+    String replicas
+    /**
+    make image params hardcoded in reource files for now
     String containerImage
     String containerName
+    */
     String jenkinsMasterUrl
     String jenkinsValue
     String jenkinsSlaveName
     String jenkinsNodeValue
-    String restartPolicy
-    String runAsUser
     String providerType = 'openshift'
     String runPolicy
     String type
@@ -33,8 +29,7 @@ class Openshift implements Serializable{
 
     Openshift(String name, apiEndpoint, String apiToken) {
       this.name = name;
-      //this.apiEndpoint = apiEndpoint;   //check if api* values go out
-      //this.apiToken = apiToken;
+      
     }
 
     String getName(){
