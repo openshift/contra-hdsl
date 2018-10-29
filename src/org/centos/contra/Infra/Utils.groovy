@@ -326,23 +326,18 @@ def createOpenshiftInstances(HashMap<String, String>openshiftData){
             for (i in 1..instance.count){
                 instance.name = "${base_name}_${i}".toString()
 
-                //(skatlapa): set values based on e.g topology
                 Openshift openshift_instance = new Openshift(instance.name)
-                if (instance.apiEndpoint){openshift_instance.setApiEndpoint(instance.api_endpoint)}   //check values naming here
-                if (instance.apiToken){openshift_instance.setApiToken(instance.api_token)}
                 if (instance.kind){openshift_instance.setKind(instance.kind)}
-                if (instance.metadataName){openshift_instance.setMetadataName(instance.metadataName)}    //check conflict of name object here name vs metadataName
                 if (instance.metadataNamespace){openshift_instance.setMetadataNamespace(instance.metadataNamespace)}
                 if (instance.replicas){openshift_instance.setReplicas(instance.replicas)}
-                if (instance.selectorName){openshift_instance.setSelectorname(instance.selectorName)}    //cehck name beginning here
+                /**
                 if (instance.containerImage){openshift_instance.setContainerImage(instance.containerImage)}
                 if (instance.containerName){openshift_instance.setContainerName(instance.containerName)}
+                */
                 if (instance.setJenkinsMasterUrl){openshift_instance.setJenkinsMasterUrl(instance.jenkinsMasterUrl)}
                 if (instance.jenkinsNodeValue){openshift_instance.setJenkinsNodeValue(instance.jenkinsNodeValue)}
                 if (instance.jekinsSlaveName){openshift_instance.setJenkinsSlavename(instance.setJenkinsSlavename)}
                 if (instance.jenkinsMasterUrl){openshift_instance.setJenkinsMasterUrl(instance.jenkinsMasterUrl)}
-                if (instance.restartPolicy){openshift_instance.setRestartPolicy(instance.restartPolicy)}
-                if (instance.runAsUser){openshift_instance.setRunAsUser(instance.runAsUser)}
                 if (instance.runPolicy){openshift_instance.setRunPolicy(instance.runPolicy)}
                 if (instance.type){openshift_instance.setType(instance.type)}
                 if (instance.secret){openshift_instance.setSecret(instance.secret)}
@@ -354,31 +349,27 @@ def createOpenshiftInstances(HashMap<String, String>openshiftData){
                 openshiftInstances.add(openshift_instance)
             }
         } else {
-            Openshift openshift_instance = new Openshift(instance.name)
-            if (instance.apiEndpoint){openshift_instance.setApiEndpoint(instance.api_endpoint)}   //check values naming here
-            if (instance.apiToken){openshift_instance.setApiToken(instance.api_token)}
-            if (instance.kind){openshift_instance.setKind(instance.kind)}
-            if (instance.metadataName){openshift_instance.setMetadataName(instance.metadataName)}    //check conflict of name object here name vs metadataName
-            if (instance.metadataNamespace){openshift_instance.setMetadataNamespace(instance.metadataNamespace)}
-            if (instance.replicas){openshift_instance.setReplicas(instance.replicas)}
-            if (instance.selectorName){openshift_instance.setSelectorname(instance.selectorName)}    //cehck name beginning here
-            if (instance.containerImage){openshift_instance.setContainerImage(instance.containerImage)}
-            if (instance.containerName){openshift_instance.setContainerName(instance.containerName)}
-            if (instance.setJenkinsMasterUrl){openshift_instance.setJenkinsMasterUrl(instance.jenkinsMasterUrl)}
-            if (instance.jenkinsNodeValue){openshift_instance.setJenkinsNodeValue(instance.jenkinsNodeValue)}
-            if (instance.jekinsSlaveName){openshift_instance.setJenkinsSlavename(instance.setJenkinsSlavename)}
-            if (instance.jenkinsMasterUrl){openshift_instance.setJenkinsMasterUrl(instance.jenkinsMasterUrl)}
-            if (instance.restartPolicy){openshift_instance.setRestartPolicy(instance.restartPolicy)}
-            if (instance.runAsUser){openshift_instance.setRunAsUser(instance.runAsUser)}
-            if (instance.runPolicy){openshift_instance.setRunPolicy(instance.runPolicy)}
-            if (instance.type){openshift_instance.setType(instance.type)}
-            if (instance.secret){openshift_instance.setSecret(instance.secret)}
-            if (instance.uri){openshift_instance.setUri(instance.uri)}
-            if (instance.script){openshift_instance.setScript(instance.script)}
+        Openshift openshift_instance = new Openshift(instance.name)
+        if (instance.kind){openshift_instance.setKind(instance.kind)}
+        if (instance.metadataNamespace){openshift_instance.setMetadataNamespace(instance.metadataNamespace)}
+        if (instance.replicas){openshift_instance.setReplicas(instance.replicas)}
+        /**
+        if (instance.containerImage){openshift_instance.setContainerImage(instance.containerImage)}
+        if (instance.containerName){openshift_instance.setContainerName(instance.containerName)}
+        */
+        if (instance.setJenkinsMasterUrl){openshift_instance.setJenkinsMasterUrl(instance.jenkinsMasterUrl)}
+        if (instance.jenkinsNodeValue){openshift_instance.setJenkinsNodeValue(instance.jenkinsNodeValue)}
+        if (instance.jekinsSlaveName){openshift_instance.setJenkinsSlavename(instance.setJenkinsSlavename)}
+        if (instance.jenkinsMasterUrl){openshift_instance.setJenkinsMasterUrl(instance.jenkinsMasterUrl)}
+        if (instance.runPolicy){openshift_instance.setRunPolicy(instance.runPolicy)}
+        if (instance.type){openshift_instance.setType(instance.type)}
+        if (instance.secret){openshift_instance.setSecret(instance.secret)}
+        if (instance.uri){openshift_instance.setUri(instance.uri)}
+        if (instance.script){openshift_instance.setScript(instance.script)}
 
-            if (instance.labelNames){openshift_instance.setLabelNames(instance.labelNames as ArrayList) }
+        if (instance.labelNames){openshift_instance.setLabelNames(instance.labelNames as ArrayList) }
 
-            openshiftInstances.add(openshift_instance)
+        openshiftInstances.add(openshift_instance)
 
         }
     }
@@ -587,8 +578,6 @@ static def getInstanceFromContext(instance, context) {
     return instance_context
 }
 
-//(skatlapa): Check if instance context is needed for OCP
-
 /**
  * A method to generate an inventory file based on the results of linchpin deployment.
  * @param instanceList
@@ -789,22 +778,17 @@ def getBinding(Openshift providerInstance, int topologyIndex){
             index             : topologyIndex,
             providerType      : providerInstance.getProviderType(),
             name              : providerInstance.getName(),
-            //instanceType    : providerInstance.getFlavor(), //no need for ocp, but check
-            api_endpoint      : providerInstance.getApiEndpoint(),
-            api_token         : providerInstance.getApiToken(),
             kind              : providerInstance.getKind(),
-            metadataName      : providerInstance.getMetadataName(),
             metadataNamespace : providerInstance.getMetadataNamespace(),
             replicas          : providerInstance.getReplicas(),
-            selectorName      : providerInstance.getSelectorName(),
+            /**
             containerImage    : providerInstance.getContainerImage(),
             containerName     : providerInstance.getContainerName(),
+            */
             jenkinsMasterUrl  : providerInstance.getJenkinsMasterUrl(),
             jenkinsValue      : providerInstance.getJenkinsValue(),
             jenkinsSlaveName  : providerInstance.getJenkinsSlavename(),
             jenkinsNodeValue  : providerInstance.getJenkinsNodeValue(),
-            restartPolicy     : providerInstance.getRestartPolicy(),
-            runAsUser         : providerInstance.getRunAsUser(),
             runPolicy         : providerInstance.getRunPolicy(),
             type              : providerInstance.getType(),
             secret            : providerInstance.getSecret(),

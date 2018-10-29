@@ -27,79 +27,30 @@ class Openshift implements Serializable{
  * runPolicy, type, secret, uri, script
  */
 
-    Openshift(String name, apiEndpoint, String apiToken) {
+    Openshift(String name, metadataNamespace, String kind, String replicas) {
       this.name = name;
-      
+      this.metadataNamespace = metadataNamespace;
+      this.kind = kind;
+      this.replicas = replicas;
     }
 
     String getName(){
       return name;
     }
 
-    String getApiEndpoint(){
-      return apiEndpoint;
-    }
-
-    void setApiEndpoint(String apiEndpoint){
-      this.apiEndpoint = apiEndpoint;
-    }
-
-    String getApiToken(){
-      return apiToken;
-    }
-
-    void setApiToken(String apiToken){
-      this.apiToken = apiToken;
-    }
-
-    String getApiVersion(){
-      return apiToken;
-    }
-
-    void setApiVersion(String apiVersion){
-      this.apiVersion = apiVersion;
+    String getMetadataNamespace(){
+      return metadataNamespace;
     }
 
     String getKind(){
       return kind;
     }
 
-    void setKind(String kind){
-      this.kind = kind;
-    }
-
-    String getMetadataName(){
-      return metadataName;
-    }
-
-    void setMetadataName(String setMetadataName){
-      this.metadataName = metadataName;
-    }
-
-    String getMetadataNamespace(){
-      return metadataNamespace;
-    }
-
-    void setMetadataNamespace(String setMetadataNamespace){
-      this.metadataName = metadataName;
-    }
-
     String getReplicas(){
       return replicas;
     }
 
-    void setReplicas(String replicas){
-      this.replicas = replicas;
-    }
-
-    String getSelectorName(){
-      return selectorName;
-    }
-
-    void setSelectorname(String selectorName){
-      this.selectorName = selectorName;
-    }
-
+/**
     String getContainerImage(){
       return containerImage;
     }
@@ -115,7 +66,7 @@ class Openshift implements Serializable{
     void setContainerName(String containerName){
       this.containerName = containerName;
     }
-
+*/
     String getJenkinsMasterUrl(){
       return jenkinsMasterUrl;
     }
@@ -146,22 +97,6 @@ class Openshift implements Serializable{
 
     void setJenkinsNodeValue(String getJenkinsNodeValue){
       this.jenkinsNodeValue = jenkinsNodeValue;
-    }
-
-    String getRestartPolicy(){
-      return restartPolicy;
-    }
-
-    void setRestartPolicy(String restartPolicy){
-      this.restartPolicy = restartPolicy;
-    }
-
-    String getRunAsUser(){
-      return runAsUser;
-    }
-
-    void setRunAsUser(String runAsUser){
-      this.runAsUser = runAsUser;
     }
 
     String getProviderType(){
