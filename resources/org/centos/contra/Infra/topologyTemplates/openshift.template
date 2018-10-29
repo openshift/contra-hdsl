@@ -26,7 +26,7 @@ ${index}_${providerType}:
                     - image: jenkins-continuous-infra-slave:latest
                       name: jenkins-contra-slave
                       env:
-                        - name: "${JENKINS_MASTER_URL}"
+                        - name: "${jenkinsMasterUrl}"
                           value: "${jenkinsValue/}"
                         - name: "${jenkinsSlaveName}"
                           value: "${jenkinsNodeValue}"
