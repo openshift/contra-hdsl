@@ -27,7 +27,7 @@ ${index}_${providerType}:
                       name: jenkins-contra-slave
                       env:
                         - name: "${jenkinsMasterUrl}"
-                          value: "${jenkinsValue/}"
+                          value: "${jenkinsValue}"
                         - name: "${jenkinsSlaveName}"
                           value: "${jenkinsNodeValue}"
                   restartPolicy: Always
