@@ -35,4 +35,4 @@ ${index}_${providerType}:
                     runAsUser: 1000090000
         credentials:
           filename: "openshift.creds"
-          profile: test
+          profile: default
