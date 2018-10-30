@@ -34,5 +34,5 @@ ${index}_${providerType}:
                   securityPolicy:
                     runAsUser: 1000090000
         credentials:
-          filename: "openshift.yaml"
+          filename: "openshift.creds"
           profile: test
