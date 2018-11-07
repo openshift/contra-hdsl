@@ -49,9 +49,9 @@ def call(Map<String, String> config = [:]) {
     // This executes scripts, should be under test -> scripts(extension of playbooks) in contra.yml and location(path) specified
     if ( configData.tests.scripts ) {
         configData.tests.scripts.each { LinkedHashMap script ->
-            HashMap scriptParams = script.vars ?: [:]
-            if (config.vars){
-                scriptParams  << (config.vars as HashMap)
+            HashMap scriptParams = script.args ?: [:]
+            if (config.args){
+                scriptParams  << (config.args as HashMap)
             }
             String paramString = scriptParams ? "-${scriptParams.entrySet().iterator().join(' ')}" : null
             String script_path = config.baseDir ? "${config.baseDir}/${script.location}" : script.location
