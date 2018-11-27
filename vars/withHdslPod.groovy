@@ -36,13 +36,13 @@ def call(Map config=[:], Closure body){
                             command: '',
                             workingDir: '/workDir'),
                     // This adds the ansible-executor container to the pod.
-                    containerTemplate(name: ansibleContainerName,
+                    containerTemplate(name: ansibleExecutorContainerName,
                             image: "${dockerRegistryURL}/${openshiftNamespace}/${ansibleExecutorContainerName}:${ansibleExecutorTag}",
                             ttyEnabled: true,
                             command: '',
                             workingDir: '/workDir'),
                     // This adds the rpmbuild test container to the pod.
-                    containerTemplate(name: linchpinContainerName,
+                    containerTemplate(name: linchpinExecutorContainerName,
                             alwaysPullImage: true,
                             image: "${dockerRegistryURL}/${openshiftNamespace}/${linchpinExecutorContainerName}:${linchpinExecutorTag}",
                             ttyEnabled: true,
