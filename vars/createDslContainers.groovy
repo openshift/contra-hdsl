@@ -38,7 +38,7 @@ def call(Map<String, ?> config=[:], Closure body){
                             args: '${computer.jnlpmac} ${computer.name}',
                             command: '',
                             workingDir: '/workDir'),
-                    // This adds the ansible-executor container to the
+                    // This adds the ansible-executor container to the pod.
                     containerTemplate(name: ansibleContainerName,
                             image: "${dockerRepoURL}/${openshiftNamespace}/ansible-executor:${ansibleExecutorTag}",
                             ttyEnabled: true,
