@@ -10,15 +10,15 @@ def call(Map config=[:], Closure body){
 
     infraUtils = new Utils()
 
-    env.podName = config.podName ?: "rhprod-${UUID.randomUUID()}"
+    env.podName = config.podName ?: "hdsl-${UUID.randomUUID()}"
     String openshiftServiceAccount = config.openshift_service_account ?: 'jenkins'
     String openshiftNamespace = infraUtils.getOpenshiftNamespace()
     String dockerRegistryURL = infraUtils.getOpenshiftDockerRegistryURL()
-    String ansibleExecutorTag = config.linchpin_executor_tag ?: 'stable'
+    String ansibleExecutorTag = config.ansible_executor_tag ?: 'stable'
     String linchpinExecutorTag = config.linchpin_executor_tag ?: 'stable'
     String jenkinsContraSlaveTag = config.jenkins_slave_tag ?: 'stable'
-    String ansibleExecutorContainerName = config.productization_container_name ?: 'ansible-executor'
-    String linchpinExecutorContainerName = config.productization_container_name ?: 'linchpin-executor'
+    String ansibleExecutorContainerName = config.ansible_container_name ?: 'ansible-executor'
+    String linchpinExecutorContainerName = config.linchpin_container_name ?: 'linchpin-executor'
     String jslaveContainerName = config.jenkins_slave_container_name ?: 'jenkins-contra-slave'
 
     podTemplate(name: env.podName,
