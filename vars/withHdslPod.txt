@@ -1,0 +1,27 @@
+<h1>withHdslPod</h1>
+<p>
+  This Jenkinsfile step creates a podTemplate, populated with the necessary
+  containers required to utilize the Contra-HDSL Library.
+</p>
+<p>
+  This step writes an environmental variable <code>podName</code> which refers
+  to the name of the created pod. This can be used in a <code>node()</code> call
+  as seen in the Usage Examples section.
+</p>
+<h2>Prerequisites</h2>
+<p>
+  This step assumes that the Jenkins instance is running on OpenShift
+</p>
+<h2>Usage Examples</h2>
+<pre>
+  <code>
+    withHdslPod{
+      node(env.podName){
+        stage('Stage 1'){
+          echo "Hello World"
+        }
+      }
+    }
+  </code>
+</pre>
+<h2>Known Issues</h2>
