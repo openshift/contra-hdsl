@@ -27,7 +27,7 @@ objects:
     - type: ConfigChange
     source:
       type: DockerFile
-      dockerfile: "FROM contrainfra/linchpin-executor:v1.1.0"
+      dockerfile: "FROM contrainfra/linchpin-executor:v1.6.5rc1"
     strategy:
       dockerStrategy:
         env:
