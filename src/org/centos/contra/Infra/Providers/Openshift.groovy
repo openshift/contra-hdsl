@@ -29,7 +29,7 @@ class Openshift implements Serializable{
  * runPolicy, type, secret, uri, script
  */
 
-    Openshift(String name, metadataNamespace, String kind, String replicas) {
+    Openshift(String name, namespace, String password, String username) {
       this.name = name;
       this.namespace = namespace;
       this.password = password;
