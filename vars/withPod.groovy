@@ -1,0 +1,49 @@
+import org.centos.contra.Infra.Utils
+
+/**
+ *
+ * @param config
+ * @param body
+ * @return
+ */
+def call(Map config=[:], Closure body){
+
+    infraUtils = new Utils()
+
+    env.podName = config.podName ?: "pod-${UUID.randomUUID()}"
+    String openshiftServiceAccount = config.openshift_service_account ?: 'jenkins'
+    String openshiftNamespace = infraUtils.getOpenshiftNamespace()
+    String dockerRegistryURL = infraUtils.getOpenshiftDockerRegistryURL()
+
+    containers = new ArrayList()
+
+    for(container in config.containers) {
+        if ('containerName' in container && 'image' in container) {
+            containers.add(
+                containerTemplate(
+                    name: container.containerName,
+                    image: "${dockerRegistryURL}/${openshiftNamespace}/${container.image}:${container.tag ?: 'stable'}",
+                    ttyEnabled: false,
+                    args: container.args ?: '',
+                    command: container.command ?: '',
+                    workingDir: '/workDir'
+                )
+            )
+        } else {
+            throw new Exception('Container must have containerName and image provided')
+        }
+    }
+
+    podTemplate(
+        name: env.podName,
+        label: env.podName,
+        cloud: 'openshift',
+        serviceAccount: openshiftServiceAccount,
+        idleMinutes: 0,
+        namespace: openshiftNamespace,
+        containers: containers
+    ) {
+        body()
+    }
+}
+

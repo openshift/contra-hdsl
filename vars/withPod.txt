@@ -1,0 +1,35 @@
+<h1>withPod</h1>
+<p>
+  This Jenkinsfile step creates a podTemplate, populated with containers as specified
+</p>
+<p>
+  This step writes an environmental variable <code>podName</code> which refers
+  to the name of the created pod. This can be used in a <code>node()</code> call
+  as seen in the Usage Examples section.
+</p>
+<p>
+  For each container specified, <code>name</code> and <code>image</code> must be provided.
+  <code>tag</code>, <code>command</code>, and <code>args</code> are optional parameters. The default <code>tag</code>
+  is "stable" and the default for both <code>command</code> and <code>args</code> is an empty string.
+<h2>Prerequisites</h2>
+<p>
+  This step assumes that the Jenkins instance is running on OpenShift
+</p>
+<h2>Usage Examples</h2>
+<pre>
+  <code>
+    withPod podName: 'cetacea',
+       containers: [
+          [containerName: 'bottlenose', image: 'tursiops_v1.2'],
+          [containerName: 'spotted', image: 'stenella_v7.4', tag: 'latest', args: 'someArgs'],
+       ],
+       {
+          node(env.podName){
+            stage('Stage 1'){
+              echo "Hello World"
+            }
+          }
+        }
+  </code>
+</pre>
+<h2>Known Issues</h2>
