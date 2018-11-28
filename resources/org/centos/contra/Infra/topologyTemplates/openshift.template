@@ -7,32 +7,17 @@ ${index}_${providerType}:
         resource_definitions:
           - name: "${name}"
             role: "openshift_inline"
-            data:
-	      - apiVersion: v1
-	      - kind: "${kind}"
-            metadata:
-              name: jenkins-contra-slave 
-              namespace: "${metadataNamespace}"
-            spec:
-              replicas: "${replicas}"
-              selector:
-                name: jenkins-contra-slave
-              template:
-                metadata:
-                  labels:
-                    name: jenkins-contra-slave
-                spec:
-                  containers:
-                    - image: jenkins-continuous-infra-slave:latest
-                      name: jenkins-contra-slave
-                      env:
-                        - name: "${jenkinsMasterUrl}"
-                          value: "${jenkinsValue}"
-                        - name: "${jenkinsSlaveName}"
-                          value: "${jenkinsNodeValue}"
-                  restartPolicy: Always
-                  securityPolicy:
-                    runAsUser: 1000090000
+            namespace: "${metadataNamespace}"
+            definition:
+              apiVersion: v1
+              data:
+                password: "${password}"
+                username: "${username}"
+              kind: Secret
+              metadata:
+                name: "${metadataName}"
+                namespace: "${metadataNamespace}"
+              type: kubernetes.io/basic-auth
         credentials:
           filename: "openshift.creds"
           profile: default

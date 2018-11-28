@@ -2,11 +2,13 @@ package org.centos.contra.Infra.Providers
 
 class Openshift implements Serializable{
     String name
+    String namespace
+    String password
+    String username
     String kind
-    String metadataNamespace
     String replicas
     /**
-    make image params hardcoded in reource files for now
+    make image params hardcoded in resource files for now
     String containerImage
     String containerName
     */
@@ -29,25 +31,41 @@ class Openshift implements Serializable{
 
     Openshift(String name, metadataNamespace, String kind, String replicas) {
       this.name = name;
-      this.metadataNamespace = metadataNamespace;
-      this.kind = kind;
-      this.replicas = replicas;
+      this.namespace = namespace;
+      this.password = password;
+      this.username = username;
     }
 
     String getName(){
       return name;
     }
 
-    String getMetadataNamespace(){
-      return metadataNamespace;
+    String getNamespace(){
+      return namespace;
+    }
+
+    String getPassword(){
+      return password;
+    }
+
+    String getUsername(){
+      return username;
     }
 
     String getKind(){
       return kind;
     }
 
+    void setKind(String kind){
+      this.kind = kind;
+    }
+
     String getReplicas(){
       return replicas;
+    }
+
+    void setReplicas(String replicas){
+      this.replicas = replicas;
     }
 
 /**

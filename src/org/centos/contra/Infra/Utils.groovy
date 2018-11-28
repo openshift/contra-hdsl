@@ -311,6 +311,9 @@ def createOpenshiftInstances(HashMap<String, String>openshiftData){
     openshiftData.instances.each {LinkedHashMap<String, String> instance ->
         // Setting default params from provider class constructor
         instance.name = instance.name ?: openshiftData.name
+        instance.namespace = instance.namespace ?: openshiftData.namespace
+        instance.password = instance.password ?: openshiftData.password
+        instance.username = instance.username ?: openshiftData.username
 
         // 1. set api* values here
         // 2. check if value for Loadbalancer has to be set(neeed in provider class too)
@@ -328,7 +331,6 @@ def createOpenshiftInstances(HashMap<String, String>openshiftData){
 
                 Openshift openshift_instance = new Openshift(instance.name)
                 if (instance.kind){openshift_instance.setKind(instance.kind)}
-                if (instance.metadataNamespace){openshift_instance.setMetadataNamespace(instance.metadataNamespace)}
                 if (instance.replicas){openshift_instance.setReplicas(instance.replicas)}
                 /**
                 if (instance.containerImage){openshift_instance.setContainerImage(instance.containerImage)}
@@ -351,7 +353,6 @@ def createOpenshiftInstances(HashMap<String, String>openshiftData){
         } else {
         Openshift openshift_instance = new Openshift(instance.name)
         if (instance.kind){openshift_instance.setKind(instance.kind)}
-        if (instance.metadataNamespace){openshift_instance.setMetadataNamespace(instance.metadataNamespace)}
         if (instance.replicas){openshift_instance.setReplicas(instance.replicas)}
         /**
         if (instance.containerImage){openshift_instance.setContainerImage(instance.containerImage)}
@@ -778,8 +779,10 @@ def getBinding(Openshift providerInstance, int topologyIndex){
             index             : topologyIndex,
             providerType      : providerInstance.getProviderType(),
             name              : providerInstance.getName(),
+            namespace         : providerInstance.getNamespace(),
+            password          : providerInstance.getPassword(),
+            username          : providerInstance.getUsername(),
             kind              : providerInstance.getKind(),
-            metadataNamespace : providerInstance.getMetadataNamespace(),
             replicas          : providerInstance.getReplicas(),
             /**
             containerImage    : providerInstance.getContainerImage(),
