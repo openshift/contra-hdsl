@@ -10,7 +10,7 @@ def call(Map config=[:], Closure body){
 
     infraUtils = new Utils()
 
-    env.podName = config.podName ?: "hdsl-${UUID.randomUUID()}"
+    env.hdslPodName = config.podName ?: "hdsl-${UUID.randomUUID()}"
     String openshiftServiceAccount = config.openshift_service_account ?: 'jenkins'
     String openshiftNamespace = infraUtils.getOpenshiftNamespace()
     String dockerRegistryURL = infraUtils.getOpenshiftDockerRegistryURL()
@@ -21,8 +21,8 @@ def call(Map config=[:], Closure body){
     String linchpinExecutorContainerName = config.linchpin_container_name ?: 'linchpin-executor'
     String jslaveContainerName = config.jenkins_slave_container_name ?: 'jenkins-contra-slave'
 
-    podTemplate(name: env.podName,
-            label: env.podName,
+    podTemplate(name: env.hdslPodName,
+            label: env.hdslPodName,
             cloud: 'openshift',
             serviceAccount: openshiftServiceAccount,
             idleMinutes: 0,
