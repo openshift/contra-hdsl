@@ -23,10 +23,10 @@ def call(Map config=[:], Closure body){
                 containerTemplate(
                     name: container.containerName,
                     image: "${dockerRegistryURL}/${openshiftNamespace}/${container.image}:${container.tag ?: 'stable'}",
-                    ttyEnabled: false,
+                    ttyEnabled: container.ttyEnabled in ['true', true],
                     args: container.args ?: '',
                     command: container.command ?: '',
-                    workingDir: '/workDir'
+                    workingDir: container.workingDir ?: '/workDir'
                 )
             )
         } else {

@@ -9,8 +9,13 @@
 </p>
 <p>
   For each container specified, <code>name</code> and <code>image</code> must be provided.
-  <code>tag</code>, <code>command</code>, and <code>args</code> are optional parameters. The default <code>tag</code>
-  is "stable" and the default for both <code>command</code> and <code>args</code> is an empty string.
+  <code>tag</code>, <code>command</code>, <code>args</code>, <code>ttyEnabled</code>, and <code>workingDir</code> are optional parameters. The defaults are:
+   <dl>
+    <dt><code>tag</code></dt> <dd>"stable"</dd>
+    <dt><code>command</code></dt> <dd>Empty string</dd>
+    <dt><code>args</code></dt> <dd>Empty string</dd>
+    <dt><code>ttyEnabled</code></dt> <dd>false</dd>
+    <dt><code>workingDir</code></dt> <dd>"/workDir"</dd>
 <h2>Prerequisites</h2>
 <p>
   This step assumes that the Jenkins instance is running on OpenShift
