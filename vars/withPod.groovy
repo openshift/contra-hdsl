@@ -10,7 +10,7 @@ def call(Map config=[:], Closure body){
 
     infraUtils = new Utils()
 
-    env.podName = config.podName ?: "pod-${UUID.randomUUID()}"
+    env.userPodName = config.podName ?: "pod-${UUID.randomUUID()}"
     String openshiftServiceAccount = config.openshift_service_account ?: 'jenkins'
     String openshiftNamespace = infraUtils.getOpenshiftNamespace()
     String dockerRegistryURL = infraUtils.getOpenshiftDockerRegistryURL()
@@ -35,8 +35,8 @@ def call(Map config=[:], Closure body){
     }
 
     podTemplate(
-        name: env.podName,
-        label: env.podName,
+        name: env.userPodName,
+        label: env.userPodName,
         cloud: 'openshift',
         serviceAccount: openshiftServiceAccount,
         idleMinutes: 0,
