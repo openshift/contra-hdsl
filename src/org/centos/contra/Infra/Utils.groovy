@@ -721,7 +721,9 @@ def createTopology(Openstack providerInstance, int topologyIndex){
  */
 def getOpenshiftNamespace() {
     return openshift.withCluster() {
-        openshift.project()
+        def openshiftNamespace = openshift.project()
+        env.opneshiftNamespace = openshiftNamespace
+        openshiftNamespace
     }
 }
 
@@ -734,6 +736,10 @@ def getOpenshiftNamespace() {
  * enough as starting point.
  */
 def getOpenshiftDockerRegistryURL() {
+    if (env.openshfitDockerRegistryUrl){
+        return env.openshfitDockerRegistryUrl
+    }
+
     return openshift.withCluster() {
         def someImageUrl = openshift.raw("get imagestream -o=jsonpath='{.items[0].status.dockerImageRepository}'").out.toString()
         String[] urlParts = someImageUrl.split('/')
@@ -748,8 +754,64 @@ def getOpenshiftDockerRegistryURL() {
                             " '<docker-registry-url>/<namespace>/<image-name:tag>'.")
         }
         def registryUrl = urlParts[0]
+        // store this as an env var as well.
+        env.openshfitDockerRegistryUrl = registryUrl
         registryUrl
     }
+}
+
+/**
+ * A method to return the URL to use to pull an image from Docker Hub
+ *
+ * There are essentially two types of images on Docker Hub:
+ *  "official" - these are pulled from index.docker.io and when browsing
+ *               Docker Hub, their URLs look like the following example:
+ *               https://hub.docker.com/_/nginx/
+ *  "personal" - these are pulled from registry.hub.docker.com and when
+ *               browsing Docker Hub, their URLs look like the following
+ *               example:
+ *               https://hub.docker.com/r/contrainfra/ansible-executor/
+ *
+ * @param imageName - Image name.
+ * @param imageTag - Image tag.
+ * @return URL for image pull.
+ */
+static String getDockerHubImageURL(String imageName, String imageTag){
+    //Define the URL base for official and personal images.
+    Map<String, String> imageURL = [
+            officialImage: 'index.docker.io',
+            personalImage: 'registry.hub.docker.com'
+    ]
+
+    String namespace = imageName.contains("/") ? imageName.split("/")[0] : null
+
+    String containerName = imageName.contains("/") ? imageName.split("/")[-1] : imageName
+
+    if ( namespace ){
+        String registryURL = imageURL.personalImage
+        return "${registryURL}/${namespace}/${containerName}:${imageTag}"
+    } else {
+        String registryURL = imageURL.officialImage
+        return "${registryURL}/${containerName}:${imageTag}"
+
+    }
+}
+
+/**
+ * A method to return the URL to use to pull an image from OpenShift
+ * @param imageName - Image name.
+ * @param imageTag - Image tag.
+ * @return - URL for image pull.
+ */
+def getOpenShiftImageUrl(String imageName, String imageTag){
+
+    // Check to see if these values are available as env vars,
+    // which would be the case if either method has been called previously
+    String openshiftDockerRegistryURL = env.openshfitDockerRegistryUrl ?: getOpenshiftDockerRegistryURL()
+    String openshiftNamespace = env.openshiftNamespace ?: getOpenshiftNamespace()
+
+    return "${openshiftDockerRegistryURL}/${openshiftNamespace}/${imageName}:${imageTag}"
+
 }
 
 // Leave this so that we can use pipeline dsl steps in methods here

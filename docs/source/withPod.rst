@@ -10,35 +10,50 @@ Parameters
 ----------
 
 .. table:: ``withPod`` Arguments
+   :widths: 15,50,10,10,15
 
-   ========================= ============================================== ======= ======== =====================
-   Arguments                 Purpose                                        Type    Required Default
-   ========================= ============================================== ======= ======== =====================
-   podName                   A user provided name for the pod to use.       String  false    ``pod-{UUID}``
-   containers                | A list of entries of containers to deploy in List    true
-                             | the pod. See the table below for container
-                             | entry parameters.
-   openshift_service_account OpenShift service account name                 String  false    ``jenkins``
-   ========================= ============================================== ======= ======== =====================
-
+   =============== ============================================== ======= ========
+   Argument        Purpose                                        Type    Required
+   =============== ============================================== ======= ========
+   containers      | A list of entries of containers to deploy in List    true
+                   | the pod. See the table below for containe
+                   | entry parameters
+   pod_name        | A user provided name for the pod to use.     String  false
+                   | **Default** ``'pod-{UUID}'``
+   service_account | OpenShift service account name               String  false
+                   | **Default** ``'jenkins'``
+   namespace       | OpenShift project namespace                  String  false
+                   | **Default** Automatically detected
+   =============== ============================================== ======= ========
 
 
 .. table:: Container entry parameters
 
-   ============= ============================================ ======= ======== ==============
-   Parameters    Purpose                                      Type    Required Default
-   ============= ============================================ ======= ======== ==============
-   containerName | A user-provided name for a container to    String  true
-                 | place in the pod
-   image         | A user-provided name for the image to      String  true
-                 | use for this container
-   tag           Tag to use for the provided image            String  false    ``stable``
-   command       Commands to pass to the container            String  false    ``''``
-   args          Args to pass to the container                String  false    ``''``
-   workingDir    | The directory to mount the ``$WORKSPACE``  String  false    ``'/workdir'``
-                 | in, with the container. The ``$WORKSPACE``
-                 | variable can be used within the container
-   ============= ============================================ ======= ======== ==============
+   ============= ============================================================== ======= ========
+   Parameter     Purpose                                                        Type    Required
+   ============= ============================================================== ======= ========
+   name          | A user-provided name for a container to place in the pod     String  true
+                 |
+   image         | A user-provided name for the image to use for this container String  true
+                 |
+   source        | Where the image should be pulled from.                       String  false
+                 | Possible values are:
+                 | * ``'openshift'``
+                 | * ``'dockerhub'``
+                 | **Default**: ``'openshift'``
+
+   tag           Tag to use for the provided image                              String  false
+   command       | Commands to pass to the container                            String  false
+                 | **Default**: ``''``
+   args          | Args to pass to the container                                String  false
+                 | **Default**: ``''``
+   workingDir    | The directory to mount the ``$WORKSPACE`` in, within the     String  false
+                 | container.
+                 | The ``$WORKSPACE`` variable can be used within the container
+                 | **Default**: ``'/workdir'``
+   ============= ============================================================== ======= ========
+
+
 
 Requirements
 ------------
