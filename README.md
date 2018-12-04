@@ -14,7 +14,7 @@ This repo contains a Jenkins shared library, referred to as the contraDSL, which
 ## Configuration
 
 ### OpenShift Configuration
-#### Container Templates
+#### Add Container Templates
 The contraDSL makes use of three containers, ```linchpin-executor```,  ```ansible-executor```, and ```jenkins-contra-slave```. These containers must exist within OpenShift and can be added by performing the following steps:
 * Checkout the contra-hdsl repo, if you haven't already: ```$ git clone https://github.com/openshift/contra-hdsl.git```
 * Login to your OpenShift instance: ```$ oc login```
@@ -24,15 +24,18 @@ The contraDSL makes use of three containers, ```linchpin-executor```,  ```ansibl
 * Add the ```ansible-executor``` buildconfig template: ```$ oc create -f config/s2i/ansible/ansible-buildconfig-template.yaml```
 * Add the ```jenkins-contra-slave``` buildconfig template: ```$ oc create -f config/s2i/jslave/jslave-buildconfig-template.yaml```
 
-The HDSL expects that these containers should be tagged as "stable" by default, although this can be overridden.
+#### Create Container Imagestreams
+The contraDSL requires that the necessary container imagestreams exist.
+* Deploy the ```linchpin-executor``` imagestream: ```$ oc new-app linchpin-executor```
+* Create the ```ansible-executor``` imagestream: ```$ oc new-app ansible-executor```
+* Create the ```jenkins-contra-slave``` imagestream: ```$ oc new-app jenkins-contra-slave-builder```
 
-To tag these containers as "stable":
 
-```$ oc tag <project namespace>/ansible-executor:latest <project namespace>/ansible-executor:stable```
-
-```$ oc tag <project namespace>/linchpin-executor:latest <project namespace>/linchpin-executor:stable```
-
-```$ oc tag <project namespace>/jenkins-contra-slave:latest <project namespace>/jenkins-contra-slave:stable```
+#### Tag Container Imagestreams
+The contraDSL expects that the necessary container imagestreams should be tagged as "stable" by default, although this can be overridden.
+* Tag the ```linchpin-executor``` imagestream: ```$ oc tag <project namespace>/ansible-executor:latest <project namespace>/ansible-executor:stable```
+* Tag the ```ansible-executor``` imagestream: ```$ oc tag <project namespace>/linchpin-executor:latest <project namespace>/linchpin-executor:stable```
+* Tag the ```jenkins-contra-slave``` imagestream: ```$ oc tag <project namespace>/jenkins-contra-slave:latest <project namespace>/jenkins-contra-slave:stable```
   
 ### Global Library Configuration
 The contraDSL needs to be configured on the Jenkins master. The necessary steps are below.
