@@ -32,9 +32,10 @@ Parameters
                  | place in the pod
    image         | A user-provided name for the image to      String  true
                  | use for this container
-   tag           Tag to use for the provided image            String  false    ``stable``
+   tag           Tag to use for the provided image            String  false    ``'stable'``
    command       Commands to pass to the container            String  false    ``''``
    args          Args to pass to the container                String  false    ``''``
+   ttyEnabled    Enable or disable tty for container          String  false    ``'false'``
    workingDir    | The directory to mount the ``$WORKSPACE``  String  false    ``'/workdir'``
                  | in, with the container. The ``$WORKSPACE``
                  | variable can be used within the container
