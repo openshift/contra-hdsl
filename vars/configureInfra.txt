@@ -1,4 +1,4 @@
-<p>The configureInfra variable handles configuring infrastructure deployed by the contraDSL by executing Ansible playbooks defined in the configuration yaml file.</p>
+<p>The configureInfra variable handles configuring infrastructure deployed by the Contra HDSL by executing Ansible playbooks defined in the configuration yaml file.</p>
 
 <h1 id="requirements">Requirements</h1>
 

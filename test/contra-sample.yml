@@ -38,6 +38,18 @@ infra:
       beaker:
         instances:
         - name: hello
+          distro: RHEL-6.5
+          arch: x86_64
+          variant: a
+          job_group: something
+          bkr_data: somedata
+          whiteboard: message
+          hostrequires:
+            - a: b
+            - b: c
+          keyvalue:
+            - a
+            - b
         - name: world
   configure:
     playbooks:

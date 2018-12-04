@@ -27,7 +27,7 @@ objects:
     - type: ConfigChange
     source:
       type: DockerFile
-      dockerfile: "FROM contrainfra/ansible-executor:v1.1.0"
+      dockerfile: "FROM contrainfra/ansible-executor:v1.1.2"
     strategy:
       dockerStrategy:
         env:
