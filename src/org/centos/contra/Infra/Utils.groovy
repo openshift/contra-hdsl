@@ -385,7 +385,7 @@ def generateTopology(providerInstance, int index, String pinfile_directory){
     dir(pinfile_directory) {
 
         String pinfile = "PinFile"
-        String topology = null
+        String topology = ""
 
         if (providerInstance instanceof Aws) {
             topology = createTopology(providerInstance, index)

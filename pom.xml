@@ -4,13 +4,13 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.centos.contra</groupId>
+	<groupId>org.centos.contra</groupId>
 	<artifactId>contra-hdsl</artifactId>
 	<packaging>jar</packaging>
 	<version>0.1.0</version> <!-- unused -->
 
 	<description>Jenkins shared library for Red Hat CI</description>
-	
+
 	<repositories>
 		<repository>
 			<id>jenkins-releases</id>
@@ -25,7 +25,7 @@
 		<groovy.spock.version>1.1-groovy-2.4</groovy.spock.version>
 		<groovy.gmaven.pluginVersion>1.6.1</groovy.gmaven.pluginVersion>
 		
-        <jenkins.version>2.89.4</jenkins.version>
+		<jenkins.version>2.102</jenkins.version>
 		<jenkins.servlet.version>3.1.0</jenkins.servlet.version>
 		<jenkins.symbol.version>1.10</jenkins.symbol.version>
 		<jenkins.workflow.cps.version>2.36</jenkins.workflow.cps.version>
@@ -43,16 +43,55 @@
 		
 		<surefire.pluginVersion>2.22.0</surefire.pluginVersion>
 	</properties>
-    
-    <dependencies>
+	
+	<dependencyManagement>
+		<dependencies>
 		
+			<!-- Transitive Dependencies that need Managing -->
+			<dependency>
+				<groupId>com.google.guava</groupId>
+				<artifactId>guava</artifactId>
+				<version>20.0</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<dependencies>
+		
+		<dependency>
+			<groupId>com.homeaway.devtools.jenkins</groupId>
+			<artifactId>jenkins-spock</artifactId>
+			<version>${jenkins-spock.version}</version>
+			<scope>test</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-core</artifactId>
+			<version>${log.logback.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>${log.logback.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>${jenkins.servlet.version}</version>
+			<scope>test</scope>
+		</dependency>
+
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>${junit.version}</version>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.jenkins-ci.main</groupId>
 			<artifactId>jenkins-core</artifactId>
@@ -82,6 +121,25 @@
 			<groupId>org.codehaus.groovy</groupId>
 			<artifactId>groovy-all</artifactId>
 			<version>${groovy.core.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+			<version>${log.slf4j.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>log4j-over-slf4j</artifactId>
+			<version>${log.slf4j.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${log.slf4j.version}</version>
 		</dependency>
 		
 		<dependency>
@@ -90,12 +148,34 @@
 			<version>${groovy.spock.version}</version>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<dependency>
 			<!-- provides the sh() pipeline step -->
 			<groupId>org.jenkins-ci.plugins.workflow</groupId>
 			<artifactId>workflow-durable-task-step</artifactId>
 			<version>2.21</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<!-- provides libraryResource pipeline step -->
+			<groupId>org.jenkins-ci.plugins.workflow</groupId>
+			<artifactId>workflow-cps-global-lib</artifactId>
+			<version>2.13</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jenkins-ci.plugins</groupId>
+			<artifactId>pipeline-utility-steps</artifactId>
+			<version>1.5.1</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<!-- provides the slackSend() pipeline step -->
+			<groupId>org.jenkins-ci.plugins</groupId>
+			<artifactId>slack</artifactId>
+			<version>2.3</version>
 			<scope>test</scope>
 		</dependency>
 		
@@ -105,20 +185,7 @@
 			<artifactId>pipeline-stage-step</artifactId>
 			<version>2.3</version>
 			<scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>pipeline-utility-steps</artifactId>
-            <version>2.1.0</version>
-            <scope>test</scope>
-        </dependency>
-        
-        <dependency>
-            <groupId>org.yaml</groupId>
-            <artifactId>snakeyaml</artifactId>
-            <version>1.18</version>
-        </dependency>
+		</dependency>
 		
 		<dependency>
 			<!-- provides sshagent() step -->
@@ -127,13 +194,11 @@
 			<version>1.16</version>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<dependency>
-			<!-- provides libraryResource() step -->
-			<groupId>org.jenkins-ci.plugins.workflow</groupId>
-			<artifactId>workflow-cps-global-lib</artifactId>
-			<version>2.10</version>
-			<scope>test</scope>
+			<groupId>org.yaml</groupId>
+			<artifactId>snakeyaml</artifactId>
+			<version>1.18</version>
 		</dependency>
 		
 	</dependencies>
@@ -197,7 +262,7 @@
 								</sources>
 								<testSources>
 									<testSource>
-                                        <directory>test</directory>
+										<directory>test</directory>
 										<includes>
 											<include>**/*.groovy</include>
 										</includes>
