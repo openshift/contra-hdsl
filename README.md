@@ -8,7 +8,7 @@ This repo contains a Jenkins shared library, referred to as the contraDSL, which
 
 * Usage of shared libraries requires Jenkins 2.x. The contraDSL was written primarily against Jenkins 2.89.4
 * Openshift 3.x. The contraDSL was written primarily against Openshift 3.6
-* Some contraDSL global variables are executed inside of specific containers, inside of an Openshift pod. 
+* Some contraDSL global variables are executed inside of specific containers, inside of an Openshift pod.
   * The s2i templates for these containers are in the ```config/s2i/ansible``` and ```config/s2i/linchpin``` directories and need to be built on your Openshift instance prior to implementing the contraDSL.
 
 ## Configuration
@@ -36,7 +36,7 @@ The contraDSL expects that the necessary container imagestreams should be tagged
 * Tag the ```linchpin-executor``` imagestream: ```$ oc tag <project namespace>/ansible-executor:latest <project namespace>/ansible-executor:stable```
 * Tag the ```ansible-executor``` imagestream: ```$ oc tag <project namespace>/linchpin-executor:latest <project namespace>/linchpin-executor:stable```
 * Tag the ```jenkins-contra-slave``` imagestream: ```$ oc tag <project namespace>/jenkins-contra-slave:latest <project namespace>/jenkins-contra-slave:stable```
-  
+
 ### Global Library Configuration
 The contraDSL needs to be configured on the Jenkins master. The necessary steps are below.
 * Click on ```Jenkins -> Manage Jenkins -> Configure System```
@@ -50,7 +50,7 @@ The contraDSL needs to be configured on the Jenkins master. The necessary steps 
 * Click ```Save``` at the bottom of the page.
 
 ### Credential configuration
-Certain methods, such as ```deployInfra```, ```configureInfra```, and ```executeTests``` expect credentials and SSH keys to be configured on the Jenkins master to allow for communication with provider services and provisioned resources. 
+Certain methods, such as ```deployInfra```, ```configureInfra```, and ```executeTests``` expect credentials and SSH keys to be configured on the Jenkins master to allow for communication with provider services and provisioned resources.
 
 For each provider, (aws, openstack, beaker, etc.) the default behavior is that there should exist two credentials:
 * \<provider>.ssh
@@ -74,3 +74,9 @@ The default name for this file is ```contra.yml```, but any file name can be use
 * ContraDSL sample repository:
   * This repo contains sample yaml configuration files, along with Jenkinsfile examples
   * https://github.com/robnester-rh/hdsl_sample
+
+
+##  How to contribute to the Project
+If you would like to submit a PR, please ensure you have a current version of the development branch and submit a PR targeted to it.
+
+We typically merge to development and then cut periodic releases from that to master, we never do a merge direct to master.
