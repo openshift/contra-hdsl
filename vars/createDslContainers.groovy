@@ -33,6 +33,7 @@ def call(Map<String, ?> config=[:], Closure body){
             containers:[
                     // This adds the custom slave container to the pod. Must be first with name 'jnlp'
                     containerTemplate(name: 'jnlp',
+                            alwaysPullImage: true,
                             image: "${dockerRepoURL}/${openshiftNamespace}/jenkins-contra-slave:${jenkinsContraSlaveTag}",
                             ttyEnabled: false,
                             args: '${computer.jnlpmac} ${computer.name}',
@@ -40,6 +41,7 @@ def call(Map<String, ?> config=[:], Closure body){
                             workingDir: '/workDir'),
                     // This adds the ansible-executor container to the pod.
                     containerTemplate(name: ansibleContainerName,
+                            alwaysPullImage: true,
                             image: "${dockerRepoURL}/${openshiftNamespace}/ansible-executor:${ansibleExecutorTag}",
                             ttyEnabled: true,
                             command: '',
