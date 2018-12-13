@@ -5,7 +5,7 @@
  * @param config.openshiftServiceAccount: String  # The name service account on Openshift which will deploy the pod
  * @param config.dockerRepoURL: String # The URL to the openshift URL containing the docker images
  * @param config.ansibleExecutorTag: String # The tag to use for the ansible container
- * @param config.linchinExecutorTag: String # The tag to use for the linchin container
+ * @param config.linchpinExecutorTag: String # The tag to use for the linchpin container
  * @param config.linchpinContainerName: String # the name of the linchpin container to be created
  * @param config.ansibleContainerName: String # the name of the ansible container to be created
  * @param body - The remainder of the Jenkinsfile which will be executed.
@@ -33,6 +33,7 @@ def call(Map<String, ?> config=[:], Closure body){
             containers:[
                     // This adds the custom slave container to the pod. Must be first with name 'jnlp'
                     containerTemplate(name: 'jnlp',
+                            alwaysPullImage: true,
                             image: "${dockerRepoURL}/${openshiftNamespace}/jenkins-contra-slave:${jenkinsContraSlaveTag}",
                             ttyEnabled: false,
                             args: '${computer.jnlpmac} ${computer.name}',
@@ -40,6 +41,7 @@ def call(Map<String, ?> config=[:], Closure body){
                             workingDir: '/workDir'),
                     // This adds the ansible-executor container to the pod.
                     containerTemplate(name: ansibleContainerName,
+                            alwaysPullImage: true,
                             image: "${dockerRepoURL}/${openshiftNamespace}/ansible-executor:${ansibleExecutorTag}",
                             ttyEnabled: true,
                             command: '',
@@ -57,7 +59,3 @@ def call(Map<String, ?> config=[:], Closure body){
         body()
     }
 }
-
-
-
-

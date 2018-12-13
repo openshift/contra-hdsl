@@ -2,8 +2,6 @@ package org.centos.contra.Infra
 
 /**
  * A class to hold static default values.
- * To use them, import the class and address them with
- * Defaults.<the value you want>
  */
 class Defaults {
 

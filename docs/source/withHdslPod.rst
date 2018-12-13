@@ -33,19 +33,19 @@ Parameters
    Parameter                 Type   Required Purpose
    ========================= ====== ======== =======
    openshift_service_account String False    | OpenShift service account to use.
-                                             | **Default**: jenkins
+                                             | **Default**: ``'jenkins'``
    linchpin_container_name   String False    | Name of the linchpin container
-                                             | **Default**: linchpin-executor
+                                             | **Default**: ``'linchpin-executor'``
    linchpin_image_name       String False    | Image to use
-                                             | **Default**: linchpin-executor
+                                             | **Default**: ``'linchpin-executor'``
    linchpin_tag              String False    Tag to use
    ansible_container_name    String False    | Name of the ansible-exeuctor container
-                                             | **Default**: ansible-executor
+                                             | **Default**: ``'ansible-executor'``
    ansible_container_name    String False    | Image to use
-                                             | **Default**: ansible-executor
+                                             | **Default**: ``'ansible-executor'``
    ansible_tag               String False    Tag to use
    jnlp_image_name           String False    | Image to use for the jnlp node
-                                             | **Default**: jenkins-contra-slave
+                                             | **Default**: ``'jenkins-contra-slave'``
    jnlp_tag                  String False    Tag to use
    ========================= ====== ======== =======
 

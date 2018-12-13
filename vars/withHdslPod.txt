@@ -18,7 +18,7 @@
   The default usage creates the pod and populates it with images pulled from the
   default HDSL image source. Currently this is OpenShift.
 </p>
-<strong>Note:</strong> There is
+<strong>Note:</strong> There is a plan to transition to pulling the images directly from Docker Hub soon.
 <pre>
   <code>
     withHdslPod{
