@@ -1,4 +1,4 @@
-<p>The parseConfig variable handles parsing the yaml configuration file used in the contraDSL library. This yaml file is converted to JSON and serialized to a string and assign to the environmental variable <code>configJSON</code></p>
+<p>The parseConfig variable handles parsing the yaml configuration file used in the Contra HDSL library. This yaml file is converted to JSON and serialized to a string and assign to the environmental variable <code>configJSON</code></p>
 
 <h1 id="examples">Examples:</h1>
 

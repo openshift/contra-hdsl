@@ -1,4 +1,4 @@
-<p>The createDslContainers variable handles creating the necessary containers which are utilized by the contraDSL. There are two containers which are created:</p>
+<p>The createDslContainers variable handles creating the necessary containers which are utilized by the Contra HDSL. There are two containers which are created:</p>
 
 <ul>
 <li><code>linchpin-executor</code> - This container is utilized to perform all linchpin commands, including provisioning and tearing down infrastructure described in the configuration yaml file.</li>
