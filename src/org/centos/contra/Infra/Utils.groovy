@@ -722,7 +722,7 @@ def createTopology(Openstack providerInstance, int topologyIndex){
 def getOpenshiftNamespace() {
     return openshift.withCluster() {
         def openshiftNamespace = openshift.project()
-        env.opneshiftNamespace = openshiftNamespace
+        env.openshiftNamespace = openshiftNamespace
         openshiftNamespace
     }
 }
