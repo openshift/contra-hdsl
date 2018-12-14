@@ -737,7 +737,7 @@ def getOpenshiftNamespace() {
  */
 def getOpenshiftDockerRegistryURL() {
     if (env.openshiftDockerRegistryUrl){
-        return env.openshfitDockerRegistryUrl
+        return env.openshiftDockerRegistryUrl
     }
 
     return openshift.withCluster() {
