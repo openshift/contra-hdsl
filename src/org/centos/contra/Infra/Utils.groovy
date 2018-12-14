@@ -807,7 +807,7 @@ def getOpenShiftImageUrl(String imageName, String imageTag){
 
     // Check to see if these values are available as env vars,
     // which would be the case if either method has been called previously
-    String openshiftDockerRegistryURL = env.openshfitDockerRegistryUrl ?: getOpenshiftDockerRegistryURL()
+    String openshiftDockerRegistryURL = env.openshiftDockerRegistryUrl ?: getOpenshiftDockerRegistryURL()
     String openshiftNamespace = env.openshiftNamespace ?: getOpenshiftNamespace()
 
     return "${openshiftDockerRegistryURL}/${openshiftNamespace}/${imageName}:${imageTag}"
