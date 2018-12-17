@@ -13,6 +13,12 @@
   This step assumes that the Jenkins instance is running on OpenShift
 </p>
 <h2>Usage Examples</h2>
+<h3>Default Usage</h3>
+<p>
+  The default usage creates the pod and populates it with images pulled from the
+  default HDSL image source. Currently this is OpenShift.
+</p>
+<strong>Note:</strong> There is a plan to transition to pulling the images directly from Docker Hub soon.
 <pre>
   <code>
     withHdslPod{
@@ -24,4 +30,6 @@
     }
   </code>
 </pre>
+<h3>Specify image source</h3>
+<
 <h2>Known Issues</h2>

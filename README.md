@@ -10,8 +10,10 @@ This repo contains a Jenkins shared library, referred to as the Contra HDSL, whi
 * Openshift 3.x. The Contra HDSL was written primarily against Openshift 3.6
 * Some Contra HDSL global variables are executed inside of specific containers, inside of an Openshift pod.
   * The s2i templates for these containers are in the ```config/s2i/ansible``` and ```config/s2i/linchpin``` directories and need to be built on your Openshift instance prior to implementing the Contra HDSL.
-
+  
 ## Configuration
+
+Please see https://contra-hdsl.readthedocs.io for the most up to date configuration instructions and *Getting Started* documentation. 
 
 ### OpenShift Configuration
 #### Add Container Templates
@@ -68,8 +70,11 @@ The Contra HDSL makes use of a yaml format configuration file. This file should 
 The default name for this file is ```contra.yml```, but any file name can be used. See the docs for further details on using non-default file names.
 
 ## Links
-* Contra HDSL GitHub repository:
-  * This repository contains the Contra HDSL shared library
+
+* Contra HDSL Documentation:
+  * https://contra-hdsl.readthedocs.io
+* ContraDSL GitHub repository:
+  * This repository contains the contraDSL shared library
   * https://github.com/openshift/contra-hdsl
 * Contra HDSL sample repository:
   * This repo contains sample yaml configuration files, along with Jenkinsfile examples
