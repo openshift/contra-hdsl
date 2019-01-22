@@ -38,5 +38,5 @@ class Defaults {
     public static final String jnlpContainerName = 'jnlp'
     public static final String linchpinContainerName = 'linchpin-executor'
 
-
-}
+    // The default timeout in MINUTES
+    public static final int executionTimeout = 30
