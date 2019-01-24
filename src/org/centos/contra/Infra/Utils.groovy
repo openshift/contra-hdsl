@@ -329,7 +329,7 @@ def createOpenshiftInstances(HashMap<String, String>openshiftData){
             for (i in 1..instance.count){
                 instance.name = "${base_name}_${i}".toString()
 
-                Openshift openshift_instance = new Openshift(instance.name)
+                Openshift openshift_instance = new Openshift(instance.name, instance.namespace, instance.username, instance.password)
                 if (instance.kind){openshift_instance.setKind(instance.kind)}
                 if (instance.replicas){openshift_instance.setReplicas(instance.replicas)}
                 /**
@@ -351,7 +351,7 @@ def createOpenshiftInstances(HashMap<String, String>openshiftData){
                 openshiftInstances.add(openshift_instance)
             }
         } else {
-        Openshift openshift_instance = new Openshift(instance.name)
+        Openshift openshift_instance = new Openshift(instance.name, instance.namespace, instance.username, instance.password)
         if (instance.kind){openshift_instance.setKind(instance.kind)}
         if (instance.replicas){openshift_instance.setReplicas(instance.replicas)}
         /**
@@ -779,7 +779,7 @@ def getBinding(Openshift providerInstance, int topologyIndex){
             index             : topologyIndex,
             providerType      : providerInstance.getProviderType(),
             name              : providerInstance.getName(),
-            namespace         : providerInstance.getNamespace(),
+            namespace         : providerInstance.getmetadataNamespace(),
             password          : providerInstance.getPassword(),
             username          : providerInstance.getUsername(),
             kind              : providerInstance.getKind(),

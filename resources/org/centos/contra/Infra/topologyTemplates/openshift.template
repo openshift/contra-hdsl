@@ -6,7 +6,7 @@ ${index}_${providerType}:
         resource_group_type: "openshift"
         resource_definitions:
           - name: "${name}"
-            role: "openshift_inline"
+            role: "openshift"
             namespace: "${metadataNamespace}"
             definition:
               apiVersion: v1
@@ -15,7 +15,7 @@ ${index}_${providerType}:
                 username: "${username}"
               kind: Secret
               metadata:
-                name: "${metadataName}"
+                name: "${name}"
                 namespace: "${metadataNamespace}"
               type: kubernetes.io/basic-auth
         credentials:
