@@ -319,10 +319,8 @@ def createOpenshiftInstances(HashMap<String, String>openshiftData){
         // 2. check if value for Loadbalancer has to be set(neeed in provider class too)
         // 3. check if keyPair is required for ocp
         // 4. "" userData, user
-        def user = null
-        if (openshiftData.user){ user = openshiftData.user }
-        if (instance.user){ user = instance.user }
-        instance.user = user
+
+        instance.user = instance.user ?: openshiftData.user
 
         if (instance.count){
             String base_name = instance.name

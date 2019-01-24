@@ -1,6 +1,7 @@
 import org.centos.contra.Infra.Providers.Aws
 import org.centos.contra.Infra.Providers.Beaker
 import org.centos.contra.Infra.Providers.Openstack
+import org.centos.contra.Infra.Providers.Openshift
 import org.centos.contra.Infra.Utils
 
 /**
@@ -40,6 +41,15 @@ def call(Map<String, ?> config=[:]){
                 // Create our openstack credential auth file, and our openstack ssh key
                 infraUtils.createKeyFile('openstack', config.openstack_credentials_id as String)
                 infraUtils.createSSHKeyFile('openstack', ansibleContainerName, config.openstack_ssh_id as String)
+            }
+        }
+        if (configData.infra.provision.cloud.openshift){
+            def openshift_instances = infraUtils.createOpenshiftInstances(configData.infra.provision.cloud.openshift as HashMap)
+            if (openshift_instances){
+                infraInstances.addAll(openshift_instances)
+                // Create our openshift credential auth file, and our openstack ssh key
+                infraUtils.createKeyFile('openshift', config.openshift_credentials_id as String)
+                infraUtils.createSSHKeyFile('openshift', ansibleContainerName, config.openshift_ssh_id as String)
             }
         }
     }
