@@ -785,7 +785,7 @@ def getBinding(Openshift providerInstance, int topologyIndex){
             /**
             containerImage    : providerInstance.getContainerImage(),
             containerName     : providerInstance.getContainerName(),
-            */
+            
             jenkinsMasterUrl  : providerInstance.getJenkinsMasterUrl(),
             jenkinsValue      : providerInstance.getJenkinsValue(),
             jenkinsSlaveName  : providerInstance.getJenkinsSlavename(),
@@ -795,6 +795,7 @@ def getBinding(Openshift providerInstance, int topologyIndex){
             secret            : providerInstance.getSecret(),
             uri               : providerInstance.getUri(),
             script            : providerInstance.getScript(),
+            */
             labelNames        : providerInstance.getLabelNames()
     ] as LinkedHashMap
 }
