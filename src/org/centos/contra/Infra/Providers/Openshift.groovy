@@ -1,6 +1,6 @@
 package org.centos.contra.Infra.Providers
 
-class Openshift implements Serializable{
+class Openshift implements Serializable {
     String name
     String metadataNamespace
     String password
@@ -36,22 +36,23 @@ class Openshift implements Serializable{
       this.username = username;
     }
 
-    String getName(){
+    String getName() {
       return name;
     }
 
-    String getmetadataNamespace(){
+    String getmetadataNamespace() {
       return metadataNamespace;
     }
 
-    String getPassword(){
+    String getPassword() {
       return password;
     }
 
-    String getUsername(){
+    String getUsername() {
       return username;
     }
 
+/**
     String getKind(){
       return kind;
     }
@@ -68,7 +69,7 @@ class Openshift implements Serializable{
       this.replicas = replicas;
     }
 
-/**
+
     String getContainerImage(){
       return containerImage;
     }
@@ -84,7 +85,7 @@ class Openshift implements Serializable{
     void setContainerName(String containerName){
       this.containerName = containerName;
     }
-*/
+
     String getJenkinsMasterUrl(){
       return jenkinsMasterUrl;
     }
@@ -168,7 +169,7 @@ class Openshift implements Serializable{
     ArrayList<String> getLabelNames(){
       return labelNames;
       }
-
+*/
     void setLabelNames(ArrayList<String> labels){
       this.labelNames = labelNames;
     }
