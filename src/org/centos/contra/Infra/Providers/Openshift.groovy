@@ -7,6 +7,7 @@ class Openshift implements Serializable {
     String username
     String kind
     String replicas
+    String providerType = 'openshift'
     /**
     make image params hardcoded in resource files for now
     String containerImage
@@ -117,7 +118,7 @@ class Openshift implements Serializable {
     void setJenkinsNodeValue(String jenkinsNodeValue){
       this.jenkinsNodeValue = jenkinsNodeValue;
     }
-
+    */
     String getProviderType(){
       return providerType;
     }
@@ -125,7 +126,7 @@ class Openshift implements Serializable {
     void setProviderType(String providerType){
       this.providerType = providerType;
     }
-
+    /**
     String getRunPolicy(){
       return runPolicy;
     }
