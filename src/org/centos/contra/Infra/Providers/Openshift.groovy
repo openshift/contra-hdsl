@@ -113,7 +113,7 @@ class Openshift implements Serializable{
       return jenkinsNodeValue;
     }
 
-    void setJenkinsNodeValue(String getJenkinsNodeValue){
+    void setJenkinsNodeValue(String jenkinsNodeValue){
       this.jenkinsNodeValue = jenkinsNodeValue;
     }
 
