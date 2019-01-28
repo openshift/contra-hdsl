@@ -105,7 +105,7 @@ class Openshift implements Serializable{
       return jenkinsSlavename;
     }
 
-    void setJenkinsSlavename(){
+    void setJenkinsSlavename(String jenkinsSlavename){
       this.jenkinsSlavename = jenkinsSlavename;
     }
 
