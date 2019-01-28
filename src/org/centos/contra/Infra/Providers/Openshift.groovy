@@ -2,7 +2,7 @@ package org.centos.contra.Infra.Providers
 
 class Openshift implements Serializable{
     String name
-    String namespace
+    String metadataNamespace
     String password
     String username
     String kind
