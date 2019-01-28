@@ -11,7 +11,6 @@ class Openshift implements Serializable {
     make image params hardcoded in resource files for now
     String containerImage
     String containerName
-    */
     String jenkinsMasterUrl
     String jenkinsValue
     String jenkinsSlaveName
@@ -22,6 +21,7 @@ class Openshift implements Serializable {
     String secret
     String uri
     String script
+    */
     ArrayList<String> labelNames = new ArrayList<String>()
 
 /**

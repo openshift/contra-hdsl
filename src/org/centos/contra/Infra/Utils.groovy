@@ -333,7 +333,7 @@ def createOpenshiftInstances(HashMap<String, String>openshiftData){
                 /**
                 if (instance.containerImage){openshift_instance.setContainerImage(instance.containerImage)}
                 if (instance.containerName){openshift_instance.setContainerName(instance.containerName)}
-                */
+
                 if (instance.setJenkinsMasterUrl){openshift_instance.setJenkinsMasterUrl(instance.jenkinsMasterUrl)}
                 if (instance.jenkinsNodeValue){openshift_instance.setJenkinsNodeValue(instance.jenkinsNodeValue)}
                 if (instance.jekinsSlaveName){openshift_instance.setJenkinsSlavename(instance.setJenkinsSlavename)}
@@ -345,7 +345,7 @@ def createOpenshiftInstances(HashMap<String, String>openshiftData){
                 if (instance.script){openshift_instance.setScript(instance.script)}
 
                 if (instance.labelNames){openshift_instance.setLabelNames(instance.labelNames as ArrayList) }
-
+                */
                 openshiftInstances.add(openshift_instance)
             }
         } else {
@@ -355,7 +355,7 @@ def createOpenshiftInstances(HashMap<String, String>openshiftData){
         /**
         if (instance.containerImage){openshift_instance.setContainerImage(instance.containerImage)}
         if (instance.containerName){openshift_instance.setContainerName(instance.containerName)}
-        */
+
         if (instance.setJenkinsMasterUrl){openshift_instance.setJenkinsMasterUrl(instance.jenkinsMasterUrl)}
         if (instance.jenkinsNodeValue){openshift_instance.setJenkinsNodeValue(instance.jenkinsNodeValue)}
         if (instance.jekinsSlaveName){openshift_instance.setJenkinsSlavename(instance.setJenkinsSlavename)}
@@ -367,7 +367,7 @@ def createOpenshiftInstances(HashMap<String, String>openshiftData){
         if (instance.script){openshift_instance.setScript(instance.script)}
 
         if (instance.labelNames){openshift_instance.setLabelNames(instance.labelNames as ArrayList) }
-
+        */
         openshiftInstances.add(openshift_instance)
 
         }
