@@ -311,7 +311,7 @@ def createOpenshiftInstances(HashMap<String, String>openshiftData){
     openshiftData.instances.each {LinkedHashMap<String, String> instance ->
         // Setting default params from provider class constructor
         instance.name = instance.name ?: openshiftData.name
-        instance.namespace = instance.namespace ?: openshiftData.namespace
+        instance.metadataNamespace = instance.metadataNamespace ?: openshiftData.metadataNamespace
         instance.password = instance.password ?: openshiftData.password
         instance.username = instance.username ?: openshiftData.username
 
@@ -777,7 +777,7 @@ def getBinding(Openshift providerInstance, int topologyIndex){
             index             : topologyIndex,
             providerType      : providerInstance.getProviderType(),
             name              : providerInstance.getName(),
-            namespace         : providerInstance.getmetadataNamespace(),
+            metadataNamespace : providerInstance.getmetadataNamespace(),
             password          : providerInstance.getPassword(),
             username          : providerInstance.getUsername(),
             kind              : providerInstance.getKind(),
