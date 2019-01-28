@@ -31,7 +31,7 @@ class Openshift implements Serializable{
 
     Openshift(String name, metadataNamespace, String password, String username) {
       this.name = name;
-      this.namespace = metadataNamespace;
+      this.metadataNamespace = metadataNamespace;
       this.password = password;
       this.username = username;
     }
