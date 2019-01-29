@@ -6,8 +6,8 @@ package org.centos.contra.Infra
 class Defaults {
 
 /**********************
-    HDSL Pod Defaults
-***********************/
+ HDSL Pod Defaults
+ ***********************/
 
     // Set our default source for images in the HDSL pod, valid options are 'openshift' and 'dockerhub'
     public static final String defaultImageSource = 'openshift'
@@ -40,3 +40,4 @@ class Defaults {
 
     // The default timeout in MINUTES
     public static final int executionTimeout = 30
+}
