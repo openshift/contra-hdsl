@@ -712,5 +712,107 @@ def createTopology(Openstack providerInstance, int topologyIndex){
     return template.make(getBinding(providerInstance, topologyIndex))
 }
 
+/**
+ * Figures out current OpenShift namespace (project name). That is the project
+ * the Jenkins is running in.
+ *
+ * The method assumes that the Jenkins instance has kubernetes plugin installed
+ * and properly configured.
+ */
+def getOpenshiftNamespace() {
+    return openshift.withCluster() {
+        def openshiftNamespace = openshift.project()
+        env.openshiftNamespace = openshiftNamespace
+        openshiftNamespace
+    }
+}
+
+/**
+ * Figures out the Docker registry URL which is supposed to host all the images
+ * for current OpenShift project.
+ *
+ * The method assumes that all images in the current project are stored in the
+ * internal Docker registry. This is not 100% bullet proof, but should be good
+ * enough as starting point.
+ */
+def getOpenshiftDockerRegistryURL() {
+    if (env.openshiftDockerRegistryUrl){
+        return env.openshiftDockerRegistryUrl
+    }
+
+    return openshift.withCluster() {
+        def someImageUrl = openshift.raw("get imagestream -o=jsonpath='{.items[0].status.dockerImageRepository}'").out.toString()
+        String[] urlParts = someImageUrl.split('/')
+
+        // there should be three parts in the image url:
+        // <docker-registry-url>/<namespace>/<image-name:tag>
+        if (urlParts.length != 3) {
+            throw new IllegalStateException(
+                    "Can not determine Docker registry URL!" +
+                            " Unexpected image URL: $someImageUrl" +
+                            " - expecting the URL in the following format:" +
+                            " '<docker-registry-url>/<namespace>/<image-name:tag>'.")
+        }
+        def registryUrl = urlParts[0]
+        // store this as an env var as well.
+        env.openshfitDockerRegistryUrl = registryUrl
+        registryUrl
+    }
+}
+
+/**
+ * A method to return the URL to use to pull an image from Docker Hub
+ *
+ * There are essentially two types of images on Docker Hub:
+ *  "official" - these are pulled from index.docker.io and when browsing
+ *               Docker Hub, their URLs look like the following example:
+ *               https://hub.docker.com/_/nginx/
+ *  "personal" - these are pulled from registry.hub.docker.com and when
+ *               browsing Docker Hub, their URLs look like the following
+ *               example:
+ *               https://hub.docker.com/r/contrainfra/ansible-executor/
+ *
+ * @param imageName - Image name.
+ * @param imageTag - Image tag.
+ * @return URL for image pull.
+ */
+static String getDockerHubImageURL(String imageName, String imageTag){
+    //Define the URL base for official and personal images.
+    Map<String, String> imageURL = [
+            officialImage: 'index.docker.io',
+            personalImage: 'registry.hub.docker.com'
+    ]
+
+    String namespace = imageName.contains("/") ? imageName.split("/")[0] : null
+
+    String containerName = imageName.contains("/") ? imageName.split("/")[-1] : imageName
+
+    if ( namespace ){
+        String registryURL = imageURL.personalImage
+        return "${registryURL}/${namespace}/${containerName}:${imageTag}"
+    } else {
+        String registryURL = imageURL.officialImage
+        return "${registryURL}/${containerName}:${imageTag}"
+
+    }
+}
+
+/**
+ * A method to return the URL to use to pull an image from OpenShift
+ * @param imageName - Image name.
+ * @param imageTag - Image tag.
+ * @return - URL for image pull.
+ */
+def getOpenShiftImageUrl(String imageName, String imageTag){
+
+    // Check to see if these values are available as env vars,
+    // which would be the case if either method has been called previously
+    String openshiftDockerRegistryURL = env.openshiftDockerRegistryUrl ?: getOpenshiftDockerRegistryURL()
+    String openshiftNamespace = env.openshiftNamespace ?: getOpenshiftNamespace()
+
+    return "${openshiftDockerRegistryURL}/${openshiftNamespace}/${imageName}:${imageTag}"
+
+}
+
 // Leave this so that we can use pipeline dsl steps in methods here
 return this

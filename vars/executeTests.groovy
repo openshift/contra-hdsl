@@ -17,10 +17,10 @@ def call(Map<String, String> config = [:]) {
 
     def infraUtils = new Utils()
 
-    def configData = readJSON text: env.configJSON
+    def configData = env.configJSON ? readJSON(text: env.configJSON) : [:]
 
     // If we have a repo defined to checkout the infra configuration playbooks from, let's handle that
-    if (configData.tests.repo) {
+    if (configData.tests?.repo) {
         String url = configData.tests.repo.url
         String branch = configData.tests.repo.branch
         String folder = configData.tests.repo.destination_folder ?: null
@@ -34,7 +34,7 @@ def call(Map<String, String> config = [:]) {
     }
 
     // Let's execute our playbooks!
-    if ( configData.tests.playbooks ) {
+    if (configData.tests?.playbooks) {
         configData.tests.playbooks.each { LinkedHashMap playbook ->
             HashMap playbookParams = playbook.vars ?: [:]
             if (config.vars){
