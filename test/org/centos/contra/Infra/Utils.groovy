@@ -118,6 +118,9 @@ public class UtilsSpec extends JenkinsPipelineSpecification {
     }
 
     def "handles failures in linchpin" () {
+        // TODO
+        // Q: What failures should be caught?
+        // Q: What is expected outcome?
     }
 
     def "ansible containers run without errors" () {
@@ -131,10 +134,21 @@ public class UtilsSpec extends JenkinsPipelineSpecification {
         noExceptionThrown()
     }
 
-    def "playbooks can be executed in the ansible container" () {
+    def "executeInAnsible sends correct command to the container for playbook execution" () {
+//        setup:
+//            getPipelineMock("env.getEnvironment")() >> [1: 'var1', 2: 'var2']
+//            infraUtils.getBinding().setVariable("WORKSPACE", "workspace")
+//        when:
+//            def status = infraUtils.executeInAnsible("anything.yml", "", true, "abc")
+//        then:
+//            1 * getPipelineMock("withEnv")(["1=var1", "2=var2"], _ as Closure)
+//            1 * getPipelineMock("container")("container", _ as Closure)
+//            1 * getPipelineMock("sh")([returnStatus: true, script: "command"]) >> 0
+//        expect:
+//            [rc: 0] == status
     }
 
-    def "successfully create a topology string - aws" () {
+    def "aws topology is created and is correct" () {
         setup:
         getPipelineMock("libraryResource")(_) >> {
             return '''${index}_${providerType}:
@@ -158,16 +172,36 @@ public class UtilsSpec extends JenkinsPipelineSpecification {
             filename: "aws.creds"
             profile: default'''
         }
+        def instance = infraUtils.createAwsInstances(config.infra.provision.cloud.aws as HashMap)[0]
 
         when:
-        def instance = infraUtils.createAwsInstances(config.infra.provision.cloud.aws as HashMap)[0]
         infraUtils.generateTopology(instance, 1, "somedir")
 
         then:
         noExceptionThrown()
+        1 * getPipelineMock("writeFile")([file: "PinFile", text: '''1_aws:
+  topology:
+    topology_name: "ec2-new"
+    resource_groups:
+      - resource_group_name: "aws"
+        resource_group_type: "aws"
+        resource_definitions:
+          - name: "aws-ec2-1_2_1"
+            flavor: "ec2"
+            role: "aws_ec2"
+            region: "us-east-1"
+            image: "ami-984189e2"
+            security_group: "group1"
+            count: 1
+            vpc_subnet_id: abc
+            keypair: aws_creds
+            assign_public_ip: true
+        credentials:
+            filename: "aws.creds"
+            profile: default'''])
     }
 
-    def "successfully create a topology string - beaker" () {
+    def "beaker topology is created and is correct" () {
         setup:
         getPipelineMock("libraryResource")(_) >> {
             return '''${index}_${providerType}:
@@ -194,17 +228,36 @@ public class UtilsSpec extends JenkinsPipelineSpecification {
           }%>
 '''
         }
+        def instance = infraUtils.createBeakerInstances(config.infra.provision.cloud.beaker as HashMap)[0]
 
         when:
-        def instance = infraUtils.createBeakerInstances(config.infra.provision.cloud.beaker as HashMap)[0]
         infraUtils.generateTopology(instance, 1, "somedir")
 
         then:
         noExceptionThrown()
+        1 * getPipelineMock("writeFile")([file: "PinFile", text: '''1_beaker:
+  topology:
+    topology_name: "beaker-slave"
+    resource_groups:
+    - resource_group_name: "beaker-slaves"
+      resource_group_type: "beaker"
+      resource_definitions:
+      - role: "bkr_server"
+        whiteboard: "Dynamically provisioned"
+        recipesets:
+        - name: "hello"
+          distro: "RHEL-6.5"
+          arch: "x86_64"
+          variant: "a"
+          count: 1
+          hostrequires:
+          - b: "c"
+          - a: "b"
+'''])
 
     }
 
-    def "successfully create a topology string - openstack" () {
+    def "openstack topology is created and is correct" () {
         setup:
         getPipelineMock("libraryResource")(_) >> {
             return '''${index}_${providerType}:
@@ -228,46 +281,74 @@ public class UtilsSpec extends JenkinsPipelineSpecification {
           profile: ci-rhos
 '''
         }
+        def instance = infraUtils.createOpenstackInstances(config.infra.provision.cloud.openstack as HashMap)[0]
+        def instance_name = instance.getNameWithUUID()
 
         when:
-        def instance = infraUtils.createOpenstackInstances(config.infra.provision.cloud.openstack as HashMap)[0]
         infraUtils.generateTopology(instance, 1, "somedir")
 
         then:
         noExceptionThrown()
-    }
-
-    def "correct topologies can be generated" () {
+        1 * getPipelineMock("writeFile")([file: "PinFile", text: """1_openstack:
+  topology:
+    topology_name: "os-single-new"
+    resource_groups:
+      - resource_group_name: "os-server-new"
+        resource_group_type: "openstack"
+        resource_definitions:
+          - name: "$instance_name"
+            role: "os_server"
+            flavor: "m1.small"
+            image: "CentOS-7-x86_64-GenericCloud-1612"
+            count: 1
+            keypair: ci-factory
+            fip_pool: 10.8.240.0
+            networks:
+              - atomic-e2e-jenkins-test
+            
+        credentials:
+          filename: "openstack.creds"
+          profile: ci-rhos
+"""])
     }
 
     def "invalid topologies are handled" () {
+        // TODO
+        // Q: What is expected outcome?
     }
     
     def "key files can be generated based on provider type" () {
+        // TODO
     }
 
     def "missing keyfiles are handled" () {
+        // TODO
+        // Q: What is expected outcome?
     }
 
     def "ssh keys can be generated for a given provider" () {
+        // TODO
     }
 
     def "context files generated by linchpin can be parsed" () {
+        // TODO
     }
 
     def "context file parsing errors are handled" () {
+        // TODO
+        // Q: What errors should be tested for?
+        // Q: What is expected outcome?
     }
 
     def "all instance context data is successfully acquired" () {
+        // TODO
     }
 
-    def "inventory file can be generate based on the results of a linchpin deployment" () {
-    }
-
-    def "get the template text from a resource file" () {
+    def "inventory file can be generated based on the results of a linchpin deployment" () {
+        // TODO
     }
 
     def "getTemplateText() handles non-matching provider parameter" () {
-
+        // TODO
     }
 }
