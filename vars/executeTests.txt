@@ -1,4 +1,4 @@
-<p>The executeTests variable handles executing tests on the infrastructure deployed by the contraDSL by executing Ansible playbooks defined in the configuration yaml file.</p>
+<p>The executeTests variable handles executing tests on the infrastructure deployed by the Contra HDSL by executing Ansible playbooks defined in the configuration yaml file.</p>
 
 <h1 id="requirements">Requirements</h1>
 

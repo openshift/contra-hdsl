@@ -3,7 +3,7 @@
   This Jenkinsfile step creates a podTemplate, populated with containers as specified
 </p>
 <p>
-  This step writes an environmental variable <code>podName</code> which refers
+  This step writes an environmental variable <code>userPodName</code> which refers
   to the name of the created pod. This can be used in a <code>node()</code> call
   as seen in the Usage Examples section.
 </p>
@@ -29,7 +29,7 @@
           [containerName: 'spotted', image: 'stenella_v7.4', tag: 'latest', args: 'someArgs'],
        ],
        {
-          node(env.podName){
+          node(env.userPodName){
             stage('Stage 1'){
               echo "Hello World"
             }

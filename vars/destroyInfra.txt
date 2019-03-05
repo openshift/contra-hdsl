@@ -1,4 +1,4 @@
-<p>The destroyInfra variable handles tearing down infrastructure deployed by the contraDSL.</p>
+<p>The destroyInfra variable handles tearing down infrastructure deployed by the Contra HDSL.</p>
 
 <h1 id="requirements">Requirements</h1>
 

@@ -1,3 +1,5 @@
+import static org.centos.contra.Infra.Defaults.*
+
 /**
  * A method which executes the podTemplate step to create the required ansible-executor and linchpin-executor containers defined.
  * @param config: A map that holds configuration parameters.
@@ -5,7 +7,7 @@
  * @param config.openshiftServiceAccount: String  # The name service account on Openshift which will deploy the pod
  * @param config.dockerRepoURL: String # The URL to the openshift URL containing the docker images
  * @param config.ansibleExecutorTag: String # The tag to use for the ansible container
- * @param config.linchinExecutorTag: String # The tag to use for the linchin container
+ * @param config.linchpinExecutorTag: String # The tag to use for the linchpin container
  * @param config.linchpinContainerName: String # the name of the linchpin container to be created
  * @param config.ansibleContainerName: String # the name of the ansible container to be created
  * @param body - The remainder of the Jenkinsfile which will be executed.
@@ -23,41 +25,45 @@ def call(Map<String, ?> config=[:], Closure body){
     String linchpinContainerName = config.linchpinContainerName ?: 'linchpin-executor'
     String ansibleContainerName = config.ansibleContainerName ?: 'ansible-executor'
 
+    try {
+      timeout(time: executionTimeout, unit: 'MINUTES') {
 
-    podTemplate(name: podName,
-            label: podName,
-            cloud: 'openshift',
-            serviceAccount: openshiftServiceAccount,
-            idleMinutes: 0,
-            namespace: openshiftNamespace,
-            containers:[
-                    // This adds the custom slave container to the pod. Must be first with name 'jnlp'
-                    containerTemplate(name: 'jnlp',
-                            image: "${dockerRepoURL}/${openshiftNamespace}/jenkins-contra-slave:${jenkinsContraSlaveTag}",
-                            ttyEnabled: false,
-                            args: '${computer.jnlpmac} ${computer.name}',
-                            command: '',
-                            workingDir: '/workDir'),
-                    // This adds the ansible-executor container to the pod.
-                    containerTemplate(name: ansibleContainerName,
-                            image: "${dockerRepoURL}/${openshiftNamespace}/ansible-executor:${ansibleExecutorTag}",
-                            ttyEnabled: true,
-                            command: '',
-                            workingDir: '/workDir'),
-                    // This adds the rpmbuild test container to the pod.
-                    containerTemplate(name: linchpinContainerName,
-                            alwaysPullImage: true,
-                            image: "${dockerRepoURL}/${openshiftNamespace}/linchpin-executor:${linchpinExecutorTag}",
-                            ttyEnabled: true,
-                            command: '',
-                            workingDir: '/workDir'
-                            ),
-                    ]
-    ) {
-        body()
+        podTemplate(name: podName,
+                label: podName,
+                cloud: 'openshift',
+                serviceAccount: openshiftServiceAccount,
+                idleMinutes: 0,
+                namespace: openshiftNamespace,
+                containers:[
+                        // This adds the custom slave container to the pod. Must be first with name 'jnlp'
+                        containerTemplate(name: 'jnlp',
+                                alwaysPullImage: true,
+                                image: "${dockerRepoURL}/${openshiftNamespace}/jenkins-contra-slave:${jenkinsContraSlaveTag}",
+                                ttyEnabled: false,
+                                args: '${computer.jnlpmac} ${computer.name}',
+                                command: '',
+                                workingDir: '/workDir'),
+                        // This adds the ansible-executor container to the pod.
+                        containerTemplate(name: ansibleContainerName,
+                                alwaysPullImage: true,
+                                image: "${dockerRepoURL}/${openshiftNamespace}/ansible-executor:${ansibleExecutorTag}",
+                                ttyEnabled: true,
+                                command: '',
+                                workingDir: '/workDir'),
+                        // This adds the rpmbuild test container to the pod.
+                        containerTemplate(name: linchpinContainerName,
+                                alwaysPullImage: true,
+                                image: "${dockerRepoURL}/${openshiftNamespace}/linchpin-executor:${linchpinExecutorTag}",
+                                ttyEnabled: true,
+                                command: '',
+                                workingDir: '/workDir'
+                                ),
+                        ]
+        ) {
+            body()
+        }
+      }
+    } catch (Exception e) {
+      echo "Timeout reached - Aborting"
     }
 }
-
-
-
-
