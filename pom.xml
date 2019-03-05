@@ -42,6 +42,13 @@
 		<log.slf4j.version>1.7.25</log.slf4j.version>
 		
 		<surefire.pluginVersion>2.22.0</surefire.pluginVersion>
+		<guava.version>20.0</guava.version>
+		<jenkins.durableTaskStepVersion>2.21</jenkins.durableTaskStepVersion>
+		<jenkins.cpsGlobalLib>2.13</jenkins.cpsGlobalLib>
+		<jenkins.workflowBasicSteps>2.6</jenkins.workflowBasicSteps>
+		<jenkins.pipelineUtilitySteps>1.5.1</jenkins.pipelineUtilitySteps>
+		<jenkins.credentialsBinding>1.17</jenkins.credentialsBinding>
+		<jenkins.pipelineStageStepVersion>2.3</jenkins.pipelineStageStepVersion>
 	</properties>
 	
 	<dependencyManagement>
@@ -51,7 +58,7 @@
 			<dependency>
 				<groupId>com.google.guava</groupId>
 				<artifactId>guava</artifactId>
-				<version>20.0</version>
+				<version>${guava.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -153,7 +160,7 @@
 			<!-- provides the sh() pipeline step -->
 			<groupId>org.jenkins-ci.plugins.workflow</groupId>
 			<artifactId>workflow-durable-task-step</artifactId>
-			<version>2.21</version>
+			<version>${jenkins.durableTaskStepVersion}</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -161,21 +168,27 @@
 			<!-- provides libraryResource pipeline step -->
 			<groupId>org.jenkins-ci.plugins.workflow</groupId>
 			<artifactId>workflow-cps-global-lib</artifactId>
-			<version>2.13</version>
+			<version>${jenkins.cpsGlobalLib}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.jenkins-ci.plugins</groupId>
-			<artifactId>pipeline-utility-steps</artifactId>
-			<version>1.5.1</version>
+			<groupId>org.jenkins-ci.plugins.workflow</groupId>
+			<artifactId>workflow-basic-steps</artifactId>
+			<version>${jenkins.workflowBasicSteps}</version>
 			<scope>test</scope>
 		</dependency>
 
 		<dependency>
-			<!-- provides the slackSend() pipeline step -->
 			<groupId>org.jenkins-ci.plugins</groupId>
-			<artifactId>slack</artifactId>
-			<version>2.3</version>
+			<artifactId>pipeline-utility-steps</artifactId>
+			<version>${jenkins.pipelineUtilitySteps}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<!-- provides withCredentials pipeline step -->
+			<groupId>org.jenkins-ci.plugins</groupId>
+			<artifactId>credentials-binding</artifactId>
+			<version>${jenkins.credentialsBinding}</version>
 			<scope>test</scope>
 		</dependency>
 		
@@ -183,15 +196,7 @@
 			<!-- provides stage() step -->
 			<groupId>org.jenkins-ci.plugins</groupId>
 			<artifactId>pipeline-stage-step</artifactId>
-			<version>2.3</version>
-			<scope>test</scope>
-		</dependency>
-		
-		<dependency>
-			<!-- provides sshagent() step -->
-			<groupId>org.jenkins-ci.plugins</groupId>
-			<artifactId>ssh-agent</artifactId>
-			<version>1.16</version>
+			<version>${jenkins.pipelineStageStepVersion}</version>
 			<scope>test</scope>
 		</dependency>
 

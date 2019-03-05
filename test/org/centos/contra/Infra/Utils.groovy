@@ -5,26 +5,30 @@ import org.yaml.snakeyaml.Yaml
 
 public class UtilsSpec extends JenkinsPipelineSpecification {
     @Shared
-    def config = new HashMap<String,?>()
+    def config = new HashMap<String, ?>()
 
     @Shared
     def infraUtils
+
     def setup() {
-        infraUtils = loadPipelineScriptForTest( "../../src/org/centos/contra/Infra/Utils.groovy" )
+        infraUtils = loadPipelineScriptForTest("../../src/org/centos/contra/Infra/Utils.groovy")
         explicitlyMockPipelineStep('dir')
         explicitlyMockPipelineStep('writeFile')
         explicitlyMockPipelineStep('fileExists')
         explicitlyMockPipelineStep('withEnv')
         explicitlyMockPipelineStep('container')
+
         explicitlyMockPipelineVariable('WORKSPACE')
-    }
-    
-    def setupSpec() {
-        Yaml yaml = new Yaml()
-        config = (Map<String, ?>)yaml.load(new FileReader('test/contra-sample.yml'))
+        explicitlyMockPipelineVariable('CREDENTIAL_FILE_NAME')
+        explicitlyMockPipelineVariable('SSH_FILE_NAME')
     }
 
-    def "create aws instances" () {
+    def setupSpec() {
+        Yaml yaml = new Yaml()
+        config = (Map<String, ?>) yaml.load(new FileReader('test/contra-sample.yml'))
+    }
+
+    def "create aws instances"() {
         def aws = config.infra.provision.cloud.aws
         def i = 1
         when:
@@ -37,19 +41,19 @@ public class UtilsSpec extends JenkinsPipelineSpecification {
         if (aws.instances[0].count) {
             base_name = base_name[0..-3]
         }
-        instances.every{ instance -> instance.getName() == base_name + "_" + i++ }
-        instances.every{ instance -> instance.getRegion() == aws.instances[0].region }
-        instances.every{ instance -> instance.getAmi() == aws.instances[0].ami }
-        instances.every{ instance -> instance.getInstance_type() == aws.instances[0].instance_type }
-        instances.every{ instance -> instance.getinstance_tags() == aws.instances[0].instance_tags }
-        instances.every{ instance -> instance.getSecurity_groups() == aws.instances[0].security_groups.join(', ')}
-        instances.every{ instance -> instance.getVpcSubnetID() == aws.instances[0].vpc_subnet_id}
-        instances.every{ instance -> instance.getKeyPair() == aws.instances[0].key_pair}
-        instances.every{ instance -> instance.getUser() == aws.instances[0].user}
-        instances.every{ instance -> instance.getAssignPublicIP() == aws.instances[0].assign_public_ip}
+        instances.every { instance -> instance.getName() == base_name + "_" + i++ }
+        instances.every { instance -> instance.getRegion() == aws.instances[0].region }
+        instances.every { instance -> instance.getAmi() == aws.instances[0].ami }
+        instances.every { instance -> instance.getInstance_type() == aws.instances[0].instance_type }
+        instances.every { instance -> instance.getinstance_tags() == aws.instances[0].instance_tags }
+        instances.every { instance -> instance.getSecurity_groups() == aws.instances[0].security_groups.join(', ') }
+        instances.every { instance -> instance.getVpcSubnetID() == aws.instances[0].vpc_subnet_id }
+        instances.every { instance -> instance.getKeyPair() == aws.instances[0].key_pair }
+        instances.every { instance -> instance.getUser() == aws.instances[0].user }
+        instances.every { instance -> instance.getAssignPublicIP() == aws.instances[0].assign_public_ip }
     }
 
-    def "creating aws instances drops to defaults when data is missing" () {
+    def "creating aws instances drops to defaults when data is missing"() {
         def aws = [instances: [[:]]]
         when:
         def instances = infraUtils.createAwsInstances(aws as HashMap)
@@ -58,18 +62,17 @@ public class UtilsSpec extends JenkinsPipelineSpecification {
         instances != null
     }
 
-    def "create beaker instances" () {
+    def "create beaker instances"() {
         def beaker = config.infra.provision.cloud.beaker
         when:
         def instances = infraUtils.createBeakerInstances(beaker as HashMap)
 
         then:
         instances != null
-        // TODO: check instances for correctness
         instances.every { instance -> instances != null }
     }
 
-    def "creating beaker instances drops to defaults when data is missing" () {
+    def "creating beaker instances drops to defaults when data is missing"() {
         def beaker = [instances: [[:]]]
         when:
         def instances = infraUtils.createBeakerInstances(beaker as HashMap)
@@ -78,7 +81,7 @@ public class UtilsSpec extends JenkinsPipelineSpecification {
         instances != null
     }
 
-    def "create openstack instances" () {
+    def "create openstack instances"() {
         def openstack = config.infra.provision.cloud.openstack
         def len = openstack.instances.size()
         def i = 0
@@ -91,13 +94,13 @@ public class UtilsSpec extends JenkinsPipelineSpecification {
         instances.every { instance -> instance.getKeyPair() == openstack.key_pair }
         instances.every { instance -> instance.getSecurityGroups() == openstack.security_groups.join(', ') }
         instances.every { instance -> instance.getName() == openstack.instances[i++].name }
-        instances.every { instance -> instance.getFlavor() == openstack.instances[len-(i--)].flavor }
+        instances.every { instance -> instance.getFlavor() == openstack.instances[len - (i--)].flavor }
         instances.every { instance -> instance.getImage() == openstack.instances[i++].image }
-        instances.every { instance -> instance.getFipPool() == openstack.instances[len-(i--)].floating_ip_pool }
+        instances.every { instance -> instance.getFipPool() == openstack.instances[len - (i--)].floating_ip_pool }
         instances.every { instance -> instance.getUser() == openstack.instances[i++].user }
     }
 
-    def "creating openstack instances drops to defaults when data is missing" () {
+    def "creating openstack instances drops to defaults when data is missing"() {
         def openstack = [instances: [[:]]]
         when:
         def instances = infraUtils.createOpenstackInstances(openstack as HashMap)
@@ -106,8 +109,7 @@ public class UtilsSpec extends JenkinsPipelineSpecification {
         instances != null
     }
 
-    def "able to execute linchpin" () {
-        setup:
+    def "able to execute linchpin"() {
         getPipelineMock("env.getEnvironment")() >> []
 
         when:
@@ -117,13 +119,7 @@ public class UtilsSpec extends JenkinsPipelineSpecification {
         noExceptionThrown()
     }
 
-    def "handles failures in linchpin" () {
-        // TODO
-        // Q: What failures should be caught?
-        // Q: What is expected outcome?
-    }
-
-    def "ansible containers run without errors" () {
+    def "ansible containers can be called without errors"() {
         setup:
         getPipelineMock("env.getEnvironment")() >> []
 
@@ -134,22 +130,15 @@ public class UtilsSpec extends JenkinsPipelineSpecification {
         noExceptionThrown()
     }
 
-    def "executeInAnsible sends correct command to the container for playbook execution" () {
-//        setup:
-//            getPipelineMock("env.getEnvironment")() >> [1: 'var1', 2: 'var2']
-//            infraUtils.getBinding().setVariable("WORKSPACE", "workspace")
-//        when:
-//            def status = infraUtils.executeInAnsible("anything.yml", "", true, "abc")
-//        then:
-//            1 * getPipelineMock("withEnv")(["1=var1", "2=var2"], _ as Closure)
-//            1 * getPipelineMock("container")("container", _ as Closure)
-//            1 * getPipelineMock("sh")([returnStatus: true, script: "command"]) >> 0
-//        expect:
-//            [rc: 0] == status
+    def "executeInAnsible sends correct command to the container for playbook execution"() {
+        infraUtils.getBinding().setVariable("WORKSPACE", "workspace")
+        when:
+        def status = infraUtils.executeInAnsible("anything.yml", "", true, "abc")
+        then:
+        1 * getPipelineMock("sh")("""ansible-playbook -vvv -i "workspace/inventory" "workspace/anything.yml" """)
     }
 
-    def "aws topology is created and is correct" () {
-        setup:
+    def "aws topology is created and is correct"() {
         getPipelineMock("libraryResource")(_) >> {
             return '''${index}_${providerType}:
   topology:
@@ -170,7 +159,8 @@ public class UtilsSpec extends JenkinsPipelineSpecification {
             <% if (assignPublicIp) out.print "assign_public_ip: ${assignPublicIp}" %>
         credentials:
             filename: "aws.creds"
-            profile: default'''
+            profile: default
+'''
         }
         def instance = infraUtils.createAwsInstances(config.infra.provision.cloud.aws as HashMap)[0]
 
@@ -198,31 +188,32 @@ public class UtilsSpec extends JenkinsPipelineSpecification {
             assign_public_ip: true
         credentials:
             filename: "aws.creds"
-            profile: default'''])
+            profile: default
+'''])
     }
 
-    def "beaker topology is created and is correct" () {
+    def "beaker topology is created and is correct"() {
         setup:
         getPipelineMock("libraryResource")(_) >> {
             return '''${index}_${providerType}:
   topology:
     topology_name: "beaker-slave"
     resource_groups:
-    - resource_group_name: "beaker-slaves"
-      resource_group_type: "beaker"
-      resource_definitions:
-      - role: "bkr_server"<% if ( jobGroup ) "\\n        job_group: \\"${jobGroup}\\"" %>
-        whiteboard: "${whiteboard ? whiteboard : 'Dynamically provisioned'}"
-        recipesets:
-        - name: "${name}"
-          distro: "${distro}"
-          arch: "${arch}"
-          variant: "${variant}"
-          count: 1<% if (bkrData) out.print "\\n          bkr_data: ${bkrData}" %><% if (hostrequires) {
-              out.print '\\n          hostrequires:\'
-              hostrequires.each { entry ->
-                   entry.eachWithIndex { k, v, index->
-                       if (index == 0) out.print "\\n          - ${k}: \\"${v}\\"" else out.print "\\n            ${k}: \\"${v}\\""
+      - resource_group_name: "beaker-slaves"
+        resource_group_type: "beaker"
+        resource_definitions:
+          - role: "bkr_server"<% if ( jobGroup ) "\\n        job_group: \\"${jobGroup}\\"" %>
+            whiteboard: "${whiteboard ? whiteboard : 'Dynamically provisioned'}"
+            recipesets:
+              - name: "${name}"
+                distro: "${distro}"
+                arch: "${arch}"
+                variant: "${variant}"
+                count: 1<% if (bkrData) out.print "\\n                bkr_data: ${bkrData}" %><% if (hostrequires) {
+                  out.print '\\n                hostrequires:\'
+              hostrequires.eachWithIndex { entry, index ->
+                   entry.each { k, v ->
+                       if (index == 0) out.print "\\n                  - ${k}: \\"${v}\\"" else out.print "\\n                    ${k}: \\"${v}\\""
                    }
               }
           }%>
@@ -239,26 +230,25 @@ public class UtilsSpec extends JenkinsPipelineSpecification {
   topology:
     topology_name: "beaker-slave"
     resource_groups:
-    - resource_group_name: "beaker-slaves"
-      resource_group_type: "beaker"
-      resource_definitions:
-      - role: "bkr_server"
-        whiteboard: "Dynamically provisioned"
-        recipesets:
-        - name: "hello"
-          distro: "RHEL-6.5"
-          arch: "x86_64"
-          variant: "a"
-          count: 1
-          hostrequires:
-          - b: "c"
-          - a: "b"
+      - resource_group_name: "beaker-slaves"
+        resource_group_type: "beaker"
+        resource_definitions:
+          - role: "bkr_server"
+            whiteboard: "Dynamically provisioned"
+            recipesets:
+              - name: "hello"
+                distro: "RHEL-6.5"
+                arch: "x86_64"
+                variant: "a"
+                count: 1
+                hostrequires:
+                  - b: "c"
+                    a: "b"
 '''])
 
     }
 
-    def "openstack topology is created and is correct" () {
-        setup:
+    def "openstack topology is created and is correct"() {
         getPipelineMock("libraryResource")(_) >> {
             return '''${index}_${providerType}:
   topology:
@@ -312,43 +302,46 @@ public class UtilsSpec extends JenkinsPipelineSpecification {
 """])
     }
 
-    def "invalid topologies are handled" () {
-        // TODO
-        // Q: What is expected outcome?
-    }
-    
-    def "key files can be generated based on provider type" () {
-        // TODO
+    def "key files can be generated based on provider type"() {
+        when:
+        infraUtils.createKeyFile('aws')
+        infraUtils.createKeyFile('beaker')
+        infraUtils.createKeyFile('openstack')
+        then:
+        1 * getPipelineMock("file.call").call(['credentialsId': "aws.creds", 'variable': 'CREDENTIAL_FILE_NAME'])
+        1 * getPipelineMock("file.call").call(['credentialsId': "beaker.creds", 'variable': 'CREDENTIAL_FILE_NAME'])
+        1 * getPipelineMock("file.call").call(['credentialsId': "openstack.creds", 'variable': 'CREDENTIAL_FILE_NAME'])
+
     }
 
-    def "missing keyfiles are handled" () {
-        // TODO
-        // Q: What is expected outcome?
+    def "ssh keys can be generated for a given provider"() {
+        when:
+        infraUtils.createSSHKeyFile('aws', 'someContainer')
+        infraUtils.createSSHKeyFile('beaker', 'someContainer')
+        infraUtils.createSSHKeyFile('openstack', 'someContainer')
+        then:
+        1 * getPipelineMock("sshUserPrivateKey.call").call(['credentialsId': 'aws.ssh', 'keyFileVariable': 'SSH_FILE_NAME', 'passphraseVariable': 'SSH_PASSPHRASE', 'usernameVariable': 'SSH_USERNAME'])
+        1 * getPipelineMock("sshUserPrivateKey.call").call(['credentialsId': 'beaker.ssh', 'keyFileVariable': 'SSH_FILE_NAME', 'passphraseVariable': 'SSH_PASSPHRASE', 'usernameVariable': 'SSH_USERNAME'])
+        1 * getPipelineMock("sshUserPrivateKey.call").call(['credentialsId': 'openstack.ssh', 'keyFileVariable': 'SSH_FILE_NAME', 'passphraseVariable': 'SSH_PASSPHRASE', 'usernameVariable': 'SSH_USERNAME'])
     }
 
-    def "ssh keys can be generated for a given provider" () {
-        // TODO
+    def "context files generated by linchpin can be parsed"() {
+
+        getPipelineMock("readJSON")(_) >> {
+            return ['validJSON': true]
+        }
+        when:
+        def result = infraUtils.parseDistilledContext('someFile')
+        then:
+        result == ['validJSON': true]
     }
 
-    def "context files generated by linchpin can be parsed" () {
-        // TODO
-    }
+    def "inventory file can be generated"() {
+        def instance = infraUtils.createAwsInstances(config.infra.provision.cloud.aws as HashMap)[0]
+        when:
+        infraUtils.generateInventory(instance, [:])
+        then:
+        1 * getPipelineMock("writeFile").call(['file': 'Mock Generator for [WORKSPACE]/inventory', 'text': '\n\n'])
 
-    def "context file parsing errors are handled" () {
-        // TODO
-        // Q: What errors should be tested for?
-        // Q: What is expected outcome?
-    }
-
-    def "all instance context data is successfully acquired" () {
-        // TODO
-    }
-
-    def "inventory file can be generated based on the results of a linchpin deployment" () {
-        // TODO
-    }
-
-    def "getTemplateText() handles non-matching provider parameter" () {
-        // TODO
     }
 }
