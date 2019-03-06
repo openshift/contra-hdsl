@@ -14,8 +14,8 @@ ${index}_${providerType}:
                 variant: "${variant}"
                 count: 1<% if (bkrData) out.print "\n                bkr_data: ${bkrData}" %><% if (hostrequires) {
                   out.print '\n                hostrequires:'
-              hostrequires.each { entry ->
-                   entry.eachWithIndex { k, v, index->
+              hostrequires.eachWithIndex { entry, index ->
+                   entry.each { k, v ->
                        if (index == 0) out.print "\n                  - ${k}: \"${v}\"" else out.print "\n                    ${k}: \"${v}\""
                    }
               }
