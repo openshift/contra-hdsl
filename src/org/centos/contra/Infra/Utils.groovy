@@ -456,7 +456,7 @@ def createSSHKeyFile(String providerType, String containerName, String sshFileId
         }
         if ( env.SSH_PASSPHRASE ) {
             sh """
-            ssh-keygen -p -f "${key_store_path}/${providerType}.ssh" -N ${SSH_PASSPHRASE}
+            ssh-keygen -p -f "${key_store_path}/${providerType}.ssh" -N ${env.SSH_PASSPHRASE}
             """
         }
         sh """
