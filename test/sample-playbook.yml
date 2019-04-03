@@ -1,0 +1,3 @@
+- name: Test playbook
+  debug:
+    msg: Test playbook

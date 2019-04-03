@@ -1,0 +1,67 @@
+---
+infra:
+  provision:
+    cloud:
+      openstack:
+        network:
+        - atomic-e2e-jenkins-test
+        key_pair: ci-factory
+        security_groups:
+          - default
+        instances:
+        - name: rnester-server1
+          flavor: m1.small
+          image: CentOS-7-x86_64-GenericCloud-1612
+          floating_ip_pool: 10.8.240.0
+          user: centos
+        - name: rnester-server2
+          flavor: m1.small
+          image: CentOS-7-x86_64-GenericCloud-1612
+          floating_ip_pool: 10.8.240.0
+          user: centos
+      aws:
+        instances:
+        - name: aws-ec2-1
+          region: us-east-1
+          ami: ami-984189e2
+          instance_type: ec2
+          instance_tags:
+            - foo
+            - bar
+          security_groups:
+            - group1
+          vpc_subnet_id: abc
+          key_pair: aws_creds
+          user: rycole
+          assign_public_ip: true
+          count: 2
+      beaker:
+        instances:
+        - name: hello
+          distro: RHEL-6.5
+          arch: x86_64
+          variant: a
+          job_group: something
+          bkr_data: somedata
+          whiteboard: message
+          hostrequires:
+            - a: b
+            - b: c
+          keyvalue:
+            - a
+            - b
+        - name: world
+  configure:
+    playbooks:
+      - location: playbooks/configuration/install_vim.yml
+tests:
+  playbooks:
+    - location: playbooks/tests/verify_vim.yml
+results:
+  outputTypes:
+    artifacts:
+      filesToSave:
+        - 'linchpin/*'
+        - 'resources/*'
+        - 'Jenkinsfile'
+      filesToExclude: 'inventory'
