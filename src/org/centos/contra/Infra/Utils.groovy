@@ -451,17 +451,13 @@ def createSSHKeyFile(String providerType, String containerName, String sshFileId
             sh """
             #!/bin/bash -x
             mkdir -p "${key_store_path}"
-            cp "${SSH_FILE_NAME}" "${key_store_path}/${providerType}.ssh"
+            cp "${env.SSH_FILE_NAME}" "${key_store_path}/${providerType}.ssh"
             """
         }
         if ( env.SSH_PASSPHRASE ) {
-            sh """
-            ssh-keygen -p -f "${key_store_path}/${providerType}.ssh" -N ${SSH_PASSPHRASE}
-            """
+            sh "ssh-keygen -p -f '${key_store_path}/${providerType}.ssh' -N ${env.SSH_PASSPHRASE}"
         }
-        sh """
-        chmod 0600 "${key_store_path}/${providerType}.ssh"
-        """
+        sh "chmod 0600 '${key_store_path}/${providerType}.ssh'"
     }
 }
 
@@ -530,11 +526,11 @@ def generateInventory(instanceList, context, inventoryFilename="inventory", keyS
         if (context_by_name[instance.name]) {
             inventoryFileContent+="${instance.name} " +
                     "ansible_host=${context_by_name[instance.name][DOMAIN_KEYS[instance.providerType]]}"
-            
+
             if ( instance.keyPair ){
                 inventoryFileContent+=" ansible_ssh_private_key_file=\"${sshStorePath}/${instance.providerType}.ssh\""
             }
-            
+
             if ( instance.user ){
                 inventoryFileContent+=" ansible_user=${instance.user}"
             }

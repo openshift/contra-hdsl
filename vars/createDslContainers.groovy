@@ -1,4 +1,5 @@
 import static org.centos.contra.Infra.Defaults.*
+import org.jenkinsci.plugins.workflow.steps.FlowInterruptedException
 
 /**
  * A method which executes the podTemplate step to create the required ansible-executor and linchpin-executor containers defined.
@@ -26,7 +27,7 @@ def call(Map<String, ?> config=[:], Closure body){
     String ansibleContainerName = config.ansibleContainerName ?: 'ansible-executor'
 
     try {
-      timeout(time: executionTimeout, unit: 'MINUTES') {
+      timeout(time: executionTimeout, unit: executionTimeoutUnit) {
 
         podTemplate(name: podName,
                 label: podName,
@@ -63,7 +64,7 @@ def call(Map<String, ?> config=[:], Closure body){
             body()
         }
       }
-    } catch (Exception e) {
-      echo "Timeout reached - Aborting"
+    } catch (FlowInterruptedException) {
+        error message:"Provisioning has timed out after ${executionTimeout} ${executionTimeoutUnit.toLowerCase()} - Aborting"
     }
 }
