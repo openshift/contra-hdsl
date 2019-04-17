@@ -40,4 +40,5 @@ class Defaults {
 
     // The default timeout in MINUTES
     public static final int executionTimeout = 30
+    public static final String executionTimeoutUnit = 'MINUTES'
 }
