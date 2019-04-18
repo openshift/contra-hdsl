@@ -1,22 +1,17 @@
 package org.centos.contra.Infra.Providers
 
-class Aws implements Serializable{
+class Aws extends Host implements Serializable {
     String ami
     String region
-    String name
     String instance_type
-    String keyPair
-    String user
     String vpcSubnetID
     Boolean AssignPublicIP
-    String providerType = 'aws'
     ArrayList<String> security_groups = []
-    ArrayList<String> instance_tags = []
 
     Aws(String ami, String region, String name, String instance_type){
+        super(name, 'aws')
         this.ami = ami
         this.region = region
-        this.name = name
         this.instance_type = instance_type
     }
 
@@ -26,10 +21,6 @@ class Aws implements Serializable{
 
     String getRegion() {
         return region
-    }
-
-    String getName() {
-        return name
     }
 
     String getSecurity_groups() {
@@ -48,30 +39,6 @@ class Aws implements Serializable{
         this.instance_type = size
     }
 
-    ArrayList<String> getinstance_tags() {
-        return instance_tags
-    }
-
-    void setinstance_tags(ArrayList<String> instance_tags) {
-        this.instance_tags = instance_tags
-    }
-
-    String getProviderType() {
-        return providerType
-    }
-
-    void setProviderType(String type) {
-        this.providerType = type
-    }
-
-    String getKeyPair() {
-        return keyPair
-    }
-
-    void setKeyPair(String keyPair) {
-        this.keyPair = keyPair
-    }
-
     String getVpcSubnetID() {
         return vpcSubnetID
     }
@@ -86,13 +53,5 @@ class Aws implements Serializable{
 
     void setAssignPublicIP(Boolean assignPublicIP) {
         AssignPublicIP = assignPublicIP
-    }
-
-    String getUser() {
-        return user
-    }
-
-    void setUser(String user) {
-        this.user = user
     }
 }

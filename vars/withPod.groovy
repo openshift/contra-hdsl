@@ -7,14 +7,13 @@ import static org.centos.contra.Infra.Defaults.*
  * @param body
  * @return
  */
-def call(Map config=[:], Closure body){
-
+def call(Map config=[:], Closure body) {
     def infraUtils = new Utils()
 
     env.userPodName = config.podName ?: "pod-${UUID.randomUUID()}"
 
-    config.openshift_service_account = config.openshift_service_account ?: openshiftServiceAccount
-    config.openshift_namespace = config.openshift_namespace ?: infraUtils.getOpenshiftNamespace()
+    String openshiftServiceAccount = config.openshift_service_account ?: openshiftServiceAccount
+    openshiftNamespace = config.openshift_namespace ?: infraUtils.getOpenshiftNamespace()
 
     config.jnlp_image_name = config.jnlp_image_name ?: jnlpImageName
     config.jnlp_tag = config.jnlp_tag ?:
@@ -23,7 +22,7 @@ def call(Map config=[:], Closure body){
                     jnlpDockerhubTag
 
     String jnlpImageURL = defaultImageSource == 'openshift' ?
-            infraUtils.getOpenShiftImageUrl(config.jnlp_image_name as String, config.jnlp_tag as String) :
+            infraUtils.getOpenShiftImageUrl(openshiftNamespace, config.jnlp_image_name as String, config.jnlp_tag as String) :
             infraUtils.getDockerHubImageURL(config.jnlp_iamge_name as String, config.jnlp_tag as String)
 
     // Create the containers array, and prepopulate it with our JNLP slave
@@ -52,7 +51,7 @@ def call(Map config=[:], Closure body){
                     containerTemplate(
                             name: container.containerName,
                             image: container.source == 'openshift' ?
-                                    infraUtils.getOpenShiftImageUrl(container.image, container.tag) :
+                                    infraUtils.getOpenShiftImageUrl(openshiftNamespace, container.image, container.tag) :
                                     infraUtils.getDockerHubImageURL(container.image, container.tag),
                             ttyEnabled: container.ttyEnabled in ['true', true],
                             alwasyPullImage: true,

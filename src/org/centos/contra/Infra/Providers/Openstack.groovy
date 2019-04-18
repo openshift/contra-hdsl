@@ -1,7 +1,6 @@
 package org.centos.contra.Infra.Providers
 
-class Openstack implements Serializable{
-    String name
+class Openstack extends Host implements Serializable{
     String flavor
     String image
     String uuid
@@ -9,30 +8,21 @@ class Openstack implements Serializable{
     String keyPair
     String fipPool
     String network
-    String user
     String userdata
     String volumeSize
     String bootVolume
-    String providerType = 'openstack'
     Boolean terminateVolume
     Boolean bootFromVolume
     Boolean autoIP
     ArrayList<String> nics = new ArrayList<String>()
     ArrayList<String> securityGroups = new ArrayList<String>()
     ArrayList<String> volumes = new ArrayList<String>()
-    ArrayList<String> instance_tags = new ArrayList<String>()
-
-
 
     Openstack(String name, String flavor, String image) {
-        this.name = name
+        super(name, 'openstack')
         this.flavor = flavor
         this.image = image
         this.uuid = UUID.randomUUID().toString().split('-')[0]
-    }
-
-    String getName() {
-        return name
     }
 
     String getNameWithUUID() {
@@ -53,14 +43,6 @@ class Openstack implements Serializable{
 
     void setRegion(String region) {
         this.region = region
-    }
-
-    String getKeyPair() {
-        return keyPair
-    }
-
-    void setKeyPair(String keyPair) {
-        this.keyPair = keyPair
     }
 
     String getFipPool() {
@@ -107,24 +89,8 @@ class Openstack implements Serializable{
         this.terminateVolume = terminateVolume
     }
 
-    String getProviderType() {
-        return providerType
-    }
-
-    void setProviderType(String providerType) {
-        this.providerType = providerType
-    }
-
     String getVolumeSize() {
         return volumeSize
-    }
-
-    String getUser() {
-        return user
-    }
-
-    void setUser(String user) {
-        this.user = user
     }
 
     Boolean getBootFromVolume() {
@@ -175,13 +141,5 @@ class Openstack implements Serializable{
 
     void setVolumes(ArrayList<String> volumes) {
         this.volumes = volumes
-    }
-
-    ArrayList<String> getInstance_tags() {
-        return instance_tags
-    }
-
-    void setInstance_tags(ArrayList<String> instance_tags) {
-        this.instance_tags = instance_tags
     }
 }

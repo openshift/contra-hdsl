@@ -34,14 +34,14 @@ Parameters
    ========================= ====== ======== =======
    openshift_service_account String False    | OpenShift service account to use.
                                              | **Default**: ``'jenkins'``
-   linchpin_container_name   String False    | Name of the linchpin container
+   linchpinContainerName     String False    | Name of the linchpin container
                                              | **Default**: ``'linchpin-executor'``
    linchpin_image_name       String False    | Image to use
                                              | **Default**: ``'linchpin-executor'``
    linchpin_tag              String False    Tag to use
-   ansible_container_name    String False    | Name of the ansible-exeuctor container
+   ansibleContainerName      String False    | Name of the ansible-executor container
                                              | **Default**: ``'ansible-executor'``
-   ansible_container_name    String False    | Image to use
+   ansible_image_name        String False    | Image to use
                                              | **Default**: ``'ansible-executor'``
    ansible_tag               String False    Tag to use
    jnlp_image_name           String False    | Image to use for the jnlp node
@@ -65,9 +65,9 @@ Overriding the ansible and/or linchpin container name(s)
 It is possible to specify an alternate image by providing a name and / or tag of a different container for the
 linchpin-executor, ansible-executor, or jnlp slave. ::
 
-    withHdslPod ansible_container_name: 'my-ansible-container',
+    withHdslPod ansibleContainerName: 'my-ansible-container',
                 ansible_executor_tag: 'latest'
-                linchpin_container_name: 'my-linchpin-container',
+                linchpinContainerName: 'my-linchpin-container',
     {
         // Jenksinfile content goes here
     }

@@ -5,7 +5,7 @@ ${index}_${providerType}:
       - resource_group_name: "beaker-slaves"
         resource_group_type: "beaker"
         resource_definitions:
-          - role: "bkr_server"<% if ( jobGroup ) "\n        job_group: \"${jobGroup}\"" %>
+          - role: "bkr_server"<% if ( jobGroup ) out.print "\n            job_group: \"${jobGroup}\"" %>
             whiteboard: "${whiteboard ? whiteboard : 'Dynamically provisioned'}"
             recipesets:
               - name: "${name}"

@@ -17,13 +17,18 @@ def call(Map<String, ?> config = [:]) {
 
     def infraUtils = new Utils()
 
-    def configData = readJSON text: env.configJSON
+    config = (env.configJSON ? readJSON(text: env.configJSON) : [:]) << config
+
+    // No configuration required
+    if (!config.infra.configure) {
+        return
+    }
 
     // If we have a repo defined to checkout the infra configuration playbooks from, let's handle that
-    if (configData.infra.configure.repo) {
-        String url = configData.infra.configure.repo.url
-        String branch = configData.infra.configure.repo.branch
-        String folder = configData.infra.configure.repo.destination_folder ?: null
+    if (config.infra.configure.repo) {
+        String url = config.infra.configure.repo.url
+        String branch = config.infra.configure.repo.branch
+        String folder = config.infra.configure.repo.destination_folder ?: null
         if ( folder ){
             dir(folder){
                 git branch: branch, url: url
@@ -34,8 +39,8 @@ def call(Map<String, ?> config = [:]) {
     }
 
     // Let's execute our playbooks!
-    if ( configData.infra.configure.playbooks ) {
-        configData.infra.configure.playbooks.each { LinkedHashMap playbook ->
+    if (config.infra.configure.playbooks) {
+        config.infra.configure.playbooks.each { LinkedHashMap playbook ->
             HashMap playbookParams = playbook.vars ?: [:]
             if (config.vars){
                 playbookParams  << (config.vars as HashMap)

@@ -1,7 +1,6 @@
 package org.centos.contra.Infra.Providers
 
-class Beaker implements Serializable{
-    String name
+class Beaker extends Host implements Serializable {
     String distro
     String arch
     String variant
@@ -10,18 +9,12 @@ class Beaker implements Serializable{
     String job_group = ""
     String bkr_data = ""
     String whiteboard = ""
-    String providerType = 'beaker'
-
 
     Beaker(String name, String distro, String arch, String variant) {
-        this.name = name
+        super(name, 'beaker')
         this.distro = distro
         this.arch = arch
         this.variant = variant
-    }
-
-    String getName() {
-        return name
     }
 
     String getDistro() {

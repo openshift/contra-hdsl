@@ -8,11 +8,12 @@ import org.centos.contra.Infra.Utils
  *                                      will be executed from.
  * @return
  */
-def call(Map<String, ?> config=[:]){
+def call(Map<String, ?> config=[:]) {
     def infraUtils = new Utils()
 
-    def configData = readJSON text: env.configJSON
+    config = (env.configJSON ? readJSON(text: env.configJSON) : [:]) << config
 
-    infraUtils.executeInLinchpin("destroy", "--creds-path \"${WORKSPACE}/linchpin/creds\"", config.verbose as Boolean,
-            config.linchpinContainerName)
+    infraUtils.executeInLinchpin('destroy',
+                               "--workspace \"${WORKSPACE}/linchpin\" --creds-path \"${WORKSPACE}/linchpin/creds\"",
+                               config.verbose as Boolean, config.linchpinContainerName)
 }

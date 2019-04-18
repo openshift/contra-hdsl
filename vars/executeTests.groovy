@@ -13,17 +13,17 @@ import org.centos.contra.Infra.Utils
  *                          will be executed from.
  * @return
  */
-def call(Map<String, String> config = [:]) {
+def call(Map<String, ?> config = [:]) {
 
     def infraUtils = new Utils()
 
-    def configData = env.configJSON ? readJSON(text: env.configJSON) : [:]
+    config = (env.configJSON ? readJSON(text: env.configJSON) : [:]) << config
 
     // If we have a repo defined to checkout the infra configuration playbooks from, let's handle that
-    if (configData.tests?.repo) {
-        String url = configData.tests.repo.url
-        String branch = configData.tests.repo.branch
-        String folder = configData.tests.repo.destination_folder ?: null
+    if (config.tests?.repo) {
+        String url = config.tests.repo.url
+        String branch = config.tests.repo.branch
+        String folder = config.tests.repo.destination_folder ?: null
         if ( folder ){
             dir(folder){
                 git branch: branch, url: url
@@ -34,8 +34,8 @@ def call(Map<String, String> config = [:]) {
     }
 
     // Let's execute our playbooks!
-    if (configData.tests?.playbooks) {
-        configData.tests.playbooks.each { LinkedHashMap playbook ->
+    if (config.tests?.playbooks) {
+        config.tests.playbooks.each { LinkedHashMap playbook ->
             HashMap playbookParams = playbook.vars ?: [:]
             if (config.vars){
                 playbookParams  << (config.vars as HashMap)

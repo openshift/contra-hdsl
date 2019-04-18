@@ -10,11 +10,13 @@ import groovy.json.JsonBuilder
  */
 
 
-def call(Map <String,?> config=[:]){
+Map call(Map <String,?> config=[:]){
 
     String configuration_file = config.filename ?: 'contra.yml'
 
     def yaml = readYaml file: "${WORKSPACE}/${configuration_file}" as String
 
     env.configJSON = new JsonBuilder(yaml)
+
+    readJSON(text:env.configJSON)
 }

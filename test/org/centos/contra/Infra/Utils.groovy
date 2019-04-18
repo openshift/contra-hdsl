@@ -25,7 +25,7 @@ public class UtilsSpec extends JenkinsPipelineSpecification {
             instances.every { instance -> instance.getRegion() == aws.instances[0].region }
             instances.every { instance -> instance.getAmi() == aws.instances[0].ami }
             instances.every { instance -> instance.getInstance_type() == aws.instances[0].instance_type }
-            instances.every { instance -> instance.getinstance_tags() == aws.instances[0].instance_tags }
+            instances.every { instance -> instance.instance_tags == aws.instances[0].instance_tags }
             instances.every { instance -> instance.getSecurity_groups() == aws.instances[0].security_groups.join(', ') }
             instances.every { instance -> instance.getVpcSubnetID() == aws.instances[0].vpc_subnet_id }
             instances.every { instance -> instance.getKeyPair() == aws.instances[0].key_pair }
@@ -122,7 +122,7 @@ public class UtilsSpec extends JenkinsPipelineSpecification {
         when:
             def status = infraUtils.executeInAnsible("anything.yml", "", true, "abc")
         then:
-            1 * getPipelineMock("sh")("""ansible-playbook -vvv -i "workspace/inventory" "workspace/anything.yml" """)
+            1 * getPipelineMock("sh")("""ansible-playbook -vvv -i "workspace/linchpin/inventory" "workspace/anything.yml" """)
     }
 
     def "aws topology is created and is correct"() {
@@ -192,7 +192,7 @@ public class UtilsSpec extends JenkinsPipelineSpecification {
       - resource_group_name: "beaker-slaves"
         resource_group_type: "beaker"
         resource_definitions:
-          - role: "bkr_server"<% if ( jobGroup ) "\\n        job_group: \\"${jobGroup}\\"" %>
+          - role: "bkr_server"<% if ( jobGroup ) out.print "\\n            job_group: \\"${jobGroup}\\"" %>
             whiteboard: "${whiteboard ? whiteboard : 'Dynamically provisioned'}"
             recipesets:
               - name: "${name}"
@@ -222,13 +222,15 @@ public class UtilsSpec extends JenkinsPipelineSpecification {
         resource_group_type: "beaker"
         resource_definitions:
           - role: "bkr_server"
-            whiteboard: "Dynamically provisioned"
+            job_group: "something"
+            whiteboard: "message"
             recipesets:
               - name: "hello"
                 distro: "RHEL-6.5"
                 arch: "x86_64"
                 variant: "a"
                 count: 1
+                bkr_data: somedata
                 hostrequires:
                   - b: "c"
                     a: "b"
@@ -297,7 +299,7 @@ public class UtilsSpec extends JenkinsPipelineSpecification {
             infraUtils.getBinding().setVariable("CREDENTIAL_FILE_NAME", "credsfile")
             explicitlyMockPipelineStep('container')
         when:
-            infraUtils.createKeyFile('aws')
+            infraUtils.createFile('aws.creds', 'credsfile', 'linchpin-executor')
         then:
             1 * getPipelineMock("file.call").call(['credentialsId': "aws.creds", 'variable': 'CREDENTIAL_FILE_NAME'])
     }
@@ -308,7 +310,7 @@ public class UtilsSpec extends JenkinsPipelineSpecification {
             infraUtils.getBinding().setVariable("CREDENTIAL_FILE_NAME", "credsfile")
             explicitlyMockPipelineStep('container')
         when:
-            infraUtils.createKeyFile('beaker')
+            infraUtils.createFile('beaker.creds', 'credsfile', 'linchpin-executor')
         then:
             1 * getPipelineMock("file.call").call(['credentialsId': "beaker.creds", 'variable': 'CREDENTIAL_FILE_NAME'])
     }
@@ -319,7 +321,7 @@ public class UtilsSpec extends JenkinsPipelineSpecification {
             infraUtils.getBinding().setVariable("CREDENTIAL_FILE_NAME", "credsfile")
             explicitlyMockPipelineStep('container')
         when:
-            infraUtils.createKeyFile('openstack')
+            infraUtils.createFile('openstack.creds', 'credsfile', 'linchpin-executor')
         then:
             1 * getPipelineMock("file.call").call(['credentialsId': "openstack.creds", 'variable': 'CREDENTIAL_FILE_NAME'])
     }
@@ -327,6 +329,7 @@ public class UtilsSpec extends JenkinsPipelineSpecification {
     def "ssh keys can be generated for aws"() {
         setup:
             infraUtils.getBinding().setVariable("WORKSPACE", "workspace")
+            infraUtils.getBinding().setVariable('env', [SSH_FILE_NAME: 'fileName', SSH_USERNAME: 'user'])
             explicitlyMockPipelineStep('container')
         when:
             infraUtils.createSSHKeyFile('aws', 'someContainer')
@@ -337,6 +340,7 @@ public class UtilsSpec extends JenkinsPipelineSpecification {
     def "ssh keys can be generated for beaker"() {
         setup:
             infraUtils.getBinding().setVariable("WORKSPACE", "workspace")
+            infraUtils.getBinding().setVariable('env', [SSH_FILE_NAME: 'fileName', SSH_USERNAME: 'user'])
             explicitlyMockPipelineStep('container')
         when:
             infraUtils.createSSHKeyFile('beaker', 'someContainer')
@@ -347,6 +351,7 @@ public class UtilsSpec extends JenkinsPipelineSpecification {
     def "ssh keys can be generated for openstack"() {
         setup:
             infraUtils.getBinding().setVariable("WORKSPACE", "workspace")
+            infraUtils.getBinding().setVariable('env', [SSH_FILE_NAME: 'fileName', SSH_USERNAME: 'user'])
             explicitlyMockPipelineStep('container')
         when:
             infraUtils.createSSHKeyFile('openstack', 'someContainer')
@@ -357,7 +362,7 @@ public class UtilsSpec extends JenkinsPipelineSpecification {
     def "test that passphrase is used when generating ssh key if provided in environment variables"() {
         setup:
             infraUtils.getBinding().setVariable("WORKSPACE", "workspace")
-            infraUtils.getBinding().setVariable("env", [SSH_PASSPHRASE: "thing", SSH_FILE_NAME: "fileName"])
+            infraUtils.getBinding().setVariable('env', [SSH_PASSPHRASE: 'thing', SSH_FILE_NAME: 'fileName', SSH_USERNAME: 'user'])
             explicitlyMockPipelineStep('container')
         when:
             infraUtils.createSSHKeyFile('openstack', 'someContainer')
@@ -386,7 +391,7 @@ public class UtilsSpec extends JenkinsPipelineSpecification {
         when:
             infraUtils.generateInventory(instance, [:])
         then:
-            1 * getPipelineMock("writeFile").call(['file': 'workspace/inventory', 'text': '\n\n'])
+            1 * getPipelineMock("writeFile").call(['file': 'workspace/linchpin/inventory', 'text': '\n\n'])
 
     }
 }

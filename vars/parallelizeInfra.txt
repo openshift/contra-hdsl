@@ -1,0 +1,23 @@
+<p>The parallelizeInfra variable handles turning an HDSL yaml file with a list of infras into a parallelized execution single infra HDSL configs. Because HDSL expects a single infra specification, the split configs must be passed to future HDSL steps through the <code>config</code> variable.</p>
+
+<h1 id="recommendations">Recommendations</h1>
+
+<p>Usage of this variable can seriously mess up your pipeline if you are not viligant in ensuring that you have protected critical sections and have prevented deadlock scenarios. Many steps, suchs as the <code>podTemplate</code> step provided by the Kubernetes plugin, are incompatible with this step since parallel calls overwrite the Jenkins configuration, creating deadlock.</p>
+
+<p>It is recommended that you use this variable to restructure your HDSL file to consume the configuration yaml and pass it along to future steps as shown below. The names of the parallel steps will default to the value found in the <code>name</code> key of the infra if one is provided, otherwise the index will be used as described in the <code>parallelize</code> step.</p>
+
+<h1 id="examples">Examples:</h1>
+
+<h2 id="basic-usage">Basic usage:</h2>
+<pre><code>stage("Parse Configuration") {
+        config = parseConfig(filename:'job.yml') << config
+    }
+
+    parallelizeInfra(config) {
+        singleInfraConfig ->
+        stage("Deploy Infra") {
+            deployInfra(singleInfraConfig)
+        }
+    }
+}
+</code></pre>

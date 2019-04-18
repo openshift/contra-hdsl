@@ -74,7 +74,7 @@ def createAwsInstances(HashMap<String,String>aws_data){
                 if (instance.security_groups){
                     aws_instance.setSecurity_groups(instance.security_groups as ArrayList)
                 }
-                if (instance.instance_tags){aws_instance.setInstance_tags(instance.instance_tags as ArrayList)}
+                if (instance.instance_tags){aws_instance.instance_tags = (instance.instance_tags as ArrayList)}
                 if (instance.vpc_subnet_id){aws_instance.setVpcSubnetID(instance.vpc_subnet_id.toString())}
                 if (instance.key_pair){aws_instance.setKeyPair(instance.key_pair.toString())}
                 if (instance.user){aws_instance.setUser(instance.user.toString())}
@@ -85,7 +85,7 @@ def createAwsInstances(HashMap<String,String>aws_data){
         } else {
             def aws_instance = new Aws(instance.ami, instance.region, instance.name, instance.instance_type)
             if (instance.security_groups){aws_instance.setSecurity_groups(instance.security_groups as ArrayList)}
-            if (instance.instance_tags){aws_instance.setInstance_tags(instance.instance_tags as ArrayList)}
+            if (instance.instance_tags){aws_instance.instance_tags = (instance.instance_tags as ArrayList)}
             if (instance.vpc_subnet_id){aws_instance.setVpcSubnetID(instance.vpc_subnet_id.toString())}
             if (instance.key_pair){aws_instance.setKeyPair(instance.key_pair.toString())}
             if (instance.user){aws_instance.setUser(instance.user.toString())}
@@ -125,23 +125,30 @@ def createBeakerInstances(HashMap<String,String>beaker_data){
         if (instance.keyvalue) {instance.keyvalue.each{ entry -> keyvalue << entry} }
         instance.keyvalue = keyvalue.toSet() as ArrayList<String>
 
-        if (instance.count){
-            String base_name = instance.name
-            for (i in 1..instance.count){
-                instance.name = "${base_name}_${i}"
+        if (instance.count) {
+            String name = instance.name ?: UUID.randomUUID().toString()
+            for (i in 1..instance.count) {
+                // For some reason, trying to create this string using string interpolation results
+                // in a JSON object instead of a String. I have no explaination for this, so I have
+                // altered the String create to use the '+' operator because this works as expected.
+                instance.name = name + "_${i}"
                 def beaker_instance = new Beaker(instance.name, instance.distro, instance.arch, instance.variant)
-                if (instance.hostrequires){
-                    beaker_instance.setHostrequires(instance.hostrequires)
-                }
-                if (instance.keyvalue){
-                    beaker_instance.setKeyvalue(instance.keyvalue)
-                }
+                beaker_instance.hostrequires = instance.hostrequires ?: beaker_instance.hostrequires
+                beaker_instance.keyvalue = instance.keyvalue ?: beaker_instance.keyvalue
+                beaker_instance.job_group = instance.job_group ?: beaker_instance.job_group
+                beaker_instance.bkr_data = instance.bkr_data ?: beaker_instance.bkr_data
+                beaker_instance.whiteboard = instance.whiteboard ?: beaker_instance.whiteboard
+
                 beaker_instances << beaker_instance
             }
         } else {
             def beaker_instance = new Beaker(instance.name, instance.distro, instance.arch, instance.variant)
-            if (instance.hostrequires){beaker_instance.setHostrequires(instance.hostrequires)}
-            if (instance.keyvalue){beaker_instance.setKeyvalue(instance.keyvalue)}
+            beaker_instance.hostrequires = instance.hostrequires ?: beaker_instance.hostrequires
+            beaker_instance.keyvalue = instance.keyvalue ?: beaker_instance.keyvalue
+            beaker_instance.job_group = instance.job_group ?: beaker_instance.job_group
+            beaker_instance.bkr_data = instance.bkr_data ?: beaker_instance.bkr_data
+            beaker_instance.whiteboard = instance.whiteboard ?: beaker_instance.whiteboard
+
             beaker_instances << beaker_instance
         }
     }
@@ -304,35 +311,73 @@ def createOpenstackInstances(HashMap<String, String>openstackData){
  * @param command - The linchpin command to execute. Typically this should be "up" or "destroy"
  * @param options - Options to be passed to the linchpin command
  * @param verbose - whether to include -vvv to the execution of the linchpin command
- * @param linchpinContainerName - name of linchpin container in executing pod. default is 'linchpin-executor'.
+ * @param containerName - name of linchpin container in executing pod. default is 'linchpin-executor'.
+ * @param args    - Arguments for the linchpin command. For linchpin "up" or "destroy" this could be target.
  * @return
  */
-def executeInLinchpin(String command, String options, Boolean verbose, String linchpinContainerName){
+def executeInLinchpin(String command, String options, Boolean verbose, String containerName, String args = '') {
+    containerName = containerName ?: 'linchpin-executor'
+    String workspace = "${WORKSPACE}/linchpin"
+    if (verbose) {
+        options = "--verbose ${options}"
+    }
 
-    String containerName = linchpinContainerName ?: 'linchpin-executor'
+    executeInContainer(containerName, workspace, 'linchpin', options, command, args) {
+        // Create our linchpin.conf file and configure it to be able to create distilled output
+        writeFile(file: "${WORKSPACE}/linchpin/linchpin.conf", text: """[lp]\ndistill_data = True\n\n[evars]\ngenerate_resources = False\n""")
+        writeFile(file: "${WORKSPACE}/localhost", text: "localhost ansible_connection=local")
+    }
 
-    // Kubernetes plugin does not let containers inherit
-    // env vars from host. We force them in.
+    if (command == 'up') {
+        echo("Waiting 30 seconds for systems to be available")
+        sleep(new Long(30))
+    }
+}
+
+/**
+ * Execute playbooks in the ansible container
+ * @param playbookPath
+ * @param paramString
+ * @param verbose - whether to include -vvv to the execution of the ansible-playbook command
+ * @param containerName - name of ansible container in executing pod. default is 'ansible-executor'.
+ * @return
+ */
+def executeInAnsible(String playbookPath, String paramString, Boolean verbose, String containerName) {
+    containerName = containerName ?: 'ansible-executor'
+    String options = "-i \"${WORKSPACE}/linchpin/inventory\""
+    if (verbose) {
+        options = "-vvv ${options}"
+    }
+
+    executeInContainer(containerName, WORKSPACE, 'ansible-playbook', options, "\"${WORKSPACE}/${playbookPath}\"", paramString)
+}
+
+/**
+ * Method to execute arbitary commands inside of on of the the HDSL containers
+ * @param containerName - Name of container in executing pod.
+ * @param workspace     - The directory in which the program will run.
+ * @param executable    - The executable program to run. Should be available on the path.
+ * @param options       - Options to be passed to the executable.
+ * @param command       - The main command passed to the executable.
+ * @param args          - Any additional arguments passed after the command.
+ * @param preExecute    - A closure to run in the container context prior to running the executable.
+ * @return
+ */
+def executeInContainer(String containerName, String workspace, String executable, String options, String command, String args, Closure preExecute = { -> }) {
+
+    // Kubernetes plugin does not let containers inherit env vars from host. We force them in.
     def containerEnv = env.getEnvironment().collect { key, value -> return "${key}=${value}" }
 
     try {
-        withEnv(containerEnv){
-            container(containerName){
-                // Create our linchpin.conf file and configure it to be able to create distilled output
-                writeFile file: "${WORKSPACE}/linchpin/linchpin.conf", text: """[lp]\ndistill_data = True\n\n[evars]\ngenerate_resources = False\n"""
-                writeFile file: "${WORKSPACE}/localhost", text: "localhost ansible_connection=local"
-                dir("${WORKSPACE}/linchpin") {
-                    if (verbose){
-                        sh """linchpin ${options} --verbose ${command}"""
-                    } else {
-                        sh """linchpin ${options} ${command}"""
+        withEnv(containerEnv) {
+            container(containerName) {
+                dir (workspace ?: '.') {
+                    if (preExecute) {
+                        preExecute()
                     }
+                    sh """${executable} ${options} ${command} ${args}"""
                 }
             }
-        }
-        if (command=="up"){
-            echo("Waiting 30 seconds for systems to be available")
-            sleep(new Long(30))
         }
     } catch (err) {
         throw err
@@ -342,35 +387,18 @@ def executeInLinchpin(String command, String options, Boolean verbose, String li
 }
 
 /**
- * Execute playbooks in the ansible container
- * @param playbook_path
- * @param paramString
- * @param verbose - whether to include -vvv to the execution of the ansible-playbook command
- * @param ansibleContainerName - name of ansible container in executing pod. default is 'ansible-executor'.
+ * Passthrough utility method for calling executeInContainer with named parameters (see @function executeInContainer above)
+ * @param args - a Map of arguments
  * @return
  */
-def executeInAnsible(String playbook_path, String paramString, Boolean verbose, String ansibleContainerName){
-
-    String containerName = ansibleContainerName ?: 'ansible-executor'
-    // Kubernetes plugin does not let containers inherit
-    // env vars from host. We force them in.
-    def containerEnv = env.getEnvironment().collect { key, value -> return "${key}=${value}" }
-
-    try {
-        withEnv(containerEnv){
-            container(containerName){
-                if (verbose){
-                    sh """ansible-playbook -vvv -i \"${WORKSPACE}/inventory\" \"${WORKSPACE}/${playbook_path}\" ${paramString}"""
-                } else {
-                    sh """ansible-playbook -i \"${WORKSPACE}/inventory\" \"${WORKSPACE}/${playbook_path}\" ${paramString}"""
-                }
-            }
-        }
-    } catch (err) {
-        throw err
-    } finally {
-        // Do something
-    }
+def executeInContainer(Map args) {
+    executeInContainer(args.containerName as String,
+                       args.workspace as String,
+                       args.executable as String,
+                       args.options as String,
+                       args.command as String,
+                       args.args as String,
+                       args.preExecute as Closure)
 }
 
 /**
@@ -409,23 +437,26 @@ def generateTopology(providerInstance, int index, String pinfile_directory){
 }
 
 /**
- * A method to create a key based on the instance provider type.
- * This method assumes there is a secret file configured in the Jenkins master's credentials store whose name and
- * description corresponds to the <providerType>.key form.
- * @param providerType
+ * A method to create a configuration file based on the instance provider type.
+ * This method assumes there is a secret file configured in the Jenkins master's credentials store
+ * whose name corresponds to the form specified in @param credentialFileId and will be installed
+ * on @param containerName with permissions specified by @param permissions.
  * @param credentialFileId
+ * @param targetPath
+ * @param containerName
+ * @param permissions
  * @return
  */
-def createKeyFile(String providerType, String credentialFileId=null){
-    String credentialFile = credentialFileId ?: "${providerType}.creds"
-    String creds_store_path = "${WORKSPACE}/linchpin/creds"
-    container('linchpin-executor'){
-        withCredentials([file(credentialsId: credentialFile, variable: 'CREDENTIAL_FILE_NAME')]) {
+def createFile(String credentialFileId, String targetPath, String containerName, String permissions = '0600') {
+    String targetDir = targetPath.contains('/') ? targetPath.substring(0, targetPath.lastIndexOf('/')) : null
+    String ensureTargetDirExists = targetDir ? "mkdir -p \"${targetDir}\"" : ''
+    container(containerName) {
+        withCredentials([file(credentialsId: credentialFileId, variable: 'CREDENTIAL_FILE_NAME')]) {
             sh """
             #!/bin/bash -x
-            mkdir -p "${creds_store_path}"
-            cp "${CREDENTIAL_FILE_NAME}" "${creds_store_path}/${providerType}.creds"
-            chmod 0600 "${creds_store_path}/${providerType}.creds"
+            ${ensureTargetDirExists}
+            cp "${CREDENTIAL_FILE_NAME}" "${targetPath}"
+            chmod ${permissions} "${targetPath}"
             """
         }
     }
@@ -437,11 +468,13 @@ def createKeyFile(String providerType, String credentialFileId=null){
  * @param providerType
  * @param containerName
  * @param sshId
- * @return
+ * @return SSH_USERNAME
  */
-def createSSHKeyFile(String providerType, String containerName, String sshFileId=null){
+String createSSHKeyFile(String providerType, String containerName, String sshFileId=null){
     String key_store_path="${WORKSPACE}/ansible/keys"
     String sshFile = sshFileId ?: "${providerType}.ssh"
+    String sshUser = env.SSH_USERNAME ?: null
+    String sshPassphrase = env.SSH_PASSPHRASE ?: ''
     container(containerName){
         withCredentials([sshUserPrivateKey(
                 credentialsId: sshFile,
@@ -453,12 +486,17 @@ def createSSHKeyFile(String providerType, String containerName, String sshFileId
             mkdir -p "${key_store_path}"
             cp "${env.SSH_FILE_NAME}" "${key_store_path}/${providerType}.ssh"
             """
+
+            sshUser = sshUser ?: env.SSH_USERNAME
+            sshPassphrase = sshPassphrase ?: env.SSH_PASSPHRASE
         }
-        if ( env.SSH_PASSPHRASE ) {
-            sh "ssh-keygen -p -f '${key_store_path}/${providerType}.ssh' -N ${env.SSH_PASSPHRASE}"
+        if (sshPassphrase) {
+            sh "ssh-keygen -p -f '${key_store_path}/${providerType}.ssh' -N ${sshPassphrase}"
         }
         sh "chmod 0600 '${key_store_path}/${providerType}.ssh'"
     }
+
+    return sshUser
 }
 
 /**
@@ -468,7 +506,7 @@ def createSSHKeyFile(String providerType, String containerName, String sshFileId
  */
 def parseDistilledContext(String context_filename="linchpin.distilled") {
     try {
-        return readJSON(file: "${WORKSPACE}/resources/${context_filename}")
+        return readJSON(file: "${WORKSPACE}/linchpin/resources/${context_filename}")
     } catch (e) {
         println(e)
         return null
@@ -481,16 +519,19 @@ def parseDistilledContext(String context_filename="linchpin.distilled") {
  * @param context
  * @return
  */
-static def getInstanceFromContext(instance, context) {
-    def instance_context = [:]
+def getInstanceFromContext(instance, context) {
+    def instanceContext = [:]
     context.each { k,v ->
-        String name = instance instanceof Openstack ? "${instance.getNameWithUUID()}1" : instance.getName()
-        if (v[0].name == name) {
-                instance_context = v[0]
+        String name = instance instanceof Openstack ? instance.getNameWithUUID() : instance.name
+        Map mergedContext = v.collectEntries()
+        if (mergedContext.name.startsWith(name)) {
+            instanceContext << mergedContext
+            instanceContext.name = instance.name
+            return instanceContext
         }
-        instance_context.name = instance.getName()
     }
-    return instance_context
+
+    return instanceContext
 }
 
 /**
@@ -502,16 +543,15 @@ static def getInstanceFromContext(instance, context) {
  * @return
  */
 def generateInventory(instanceList, context, inventoryFilename="inventory", keyStorePath="ansible/keys") {
-    def context_by_name = [:]
     def DOMAIN_KEYS = [
             'aws'       : 'public_ip',
-            'beaker'    : '',
+            'beaker'    : 'system',
             'openstack' : 'public_v4',
     ]
     def types = [:]
     def tags = [:]
 
-    String inventoryFile = "${WORKSPACE}/${inventoryFilename}"
+    String inventoryFile = "${WORKSPACE}/linchpin/${inventoryFilename}"
     String sshStorePath = "${WORKSPACE}/${keyStorePath}"
     String inventoryFileContent = ""
 
@@ -522,16 +562,16 @@ def generateInventory(instanceList, context, inventoryFilename="inventory", keyS
 
     // for each instance in the context, list it in the inventory by its name
     instanceList.each { instance ->
-        context_by_name[instance.name] = getInstanceFromContext(instance, context)
-        if (context_by_name[instance.name]) {
+        def instanceContext = getInstanceFromContext(instance, context)
+        if (instanceContext) {
             inventoryFileContent+="${instance.name} " +
-                    "ansible_host=${context_by_name[instance.name][DOMAIN_KEYS[instance.providerType]]}"
+                    "ansible_host=${instanceContext[DOMAIN_KEYS[instance.providerType]]}"
 
-            if ( instance.keyPair ){
+            if (instance.keyPair) {
                 inventoryFileContent+=" ansible_ssh_private_key_file=\"${sshStorePath}/${instance.providerType}.ssh\""
             }
 
-            if ( instance.user ){
+            if (instance.user) {
                 inventoryFileContent+=" ansible_user=${instance.user}"
             }
 
@@ -799,12 +839,12 @@ static String getDockerHubImageURL(String imageName, String imageTag){
  * @param imageTag - Image tag.
  * @return - URL for image pull.
  */
-def getOpenShiftImageUrl(String imageName, String imageTag){
+def getOpenShiftImageUrl(String openshiftNamespace = null, String imageName, String imageTag){
 
     // Check to see if these values are available as env vars,
     // which would be the case if either method has been called previously
     String openshiftDockerRegistryURL = env.openshiftDockerRegistryUrl ?: getOpenshiftDockerRegistryURL()
-    String openshiftNamespace = env.openshiftNamespace ?: getOpenshiftNamespace()
+    openshiftNamespace = openshiftNamespace ?: (env.openshiftNamespace ?: getOpenshiftNamespace())
 
     return "${openshiftDockerRegistryURL}/${openshiftNamespace}/${imageName}:${imageTag}"
 

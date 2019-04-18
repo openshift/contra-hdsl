@@ -1,18 +1,18 @@
 def call(Map<String, ?> config = [:]) {
     String reportingType = config.reportingType ?: 'email'
 
-    Map<String, String> configData = readJSON text: env.configJSON
+    config = readJSON(text: env.configJSON) << config
 
     if (reportingType == 'email'){
         ArrayList recipientEmails = []
         ArrayList ccEmails = []
         ArrayList bccEmails = []
 
-        if ( configData.recipientEmail ) { combineEmailAddresses(recipientEmails, configData.recepientEmail) }
+        if ( config.recipientEmail ) { combineEmailAddresses(recipientEmails, config.recepientEmail) }
         if ( config.recipientEmail ){ combineEmailAddresses(recipientEmails, config.recipientEmail) }
-        if ( configData.ccEmail ) { combineEmailAddresses(ccEmails, configData.ccEmail) }
+        if ( config.ccEmail ) { combineEmailAddresses(ccEmails, config.ccEmail) }
         if ( config.ccEmail ){ combineEmailAddresses(ccEmails, config.ccEmail) }
-        if ( configData.bccEmail ) { combineEmailAddresses(bccEmails, configData.bccEmail) }
+        if ( config.bccEmail ) { combineEmailAddresses(bccEmails, config.bccEmail) }
         if ( config.bccEmail ){ combineEmailAddresses(bccEmails, config.bccEmail) }
 
         // subject: JOB NAME - BUILD - RESULT

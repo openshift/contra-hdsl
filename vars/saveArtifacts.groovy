@@ -17,7 +17,7 @@
  */
 def call(Map <String, ?> config=[:]) {
 
-    def configData = readJSON text: env.configJSON
+    config = readJSON(text: env.configJSON) << config
 
     ArrayList filesToSave = []
     ArrayList filesToExclude = []
@@ -33,16 +33,16 @@ def call(Map <String, ?> config=[:]) {
         // If we reach a NullPointerException, we log it, and move forward, as there may be
         // parameters passed in via the Jenkinsfile call.
 
-        configData
+        config
         key="configData"
-        configData.get('results')
+        config.get('results')
         key="results"
-        configData.results.get('outputTypes')
+        config.results.get('outputTypes')
         key="outputTypes"
-        configData.results.outputTypes.get('artifacts')
+        config.results.outputTypes.get('artifacts')
         key="artifacts"
 
-        Map artifacts = configData.results.outputTypes.artifacts
+        Map artifacts = config.results.outputTypes.artifacts
         filesToSave = artifacts.filesToSave ? formatFileSet(artifacts.filesToSave) : filesToSave
         filesToExclude = artifacts.filesToExclude ? formatFileSet(artifacts.filesToExclude) : filesToExclude
 
@@ -82,7 +82,7 @@ def call(Map <String, ?> config=[:]) {
         }
 
         archiveArtifacts(command)
-        
+
     } else {
         println("No files specified to archive, skipping artifact archiving.")
     }

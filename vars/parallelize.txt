@@ -1,0 +1,14 @@
+<p>The parallelize variable handles the abstract tasks of turning a list of argument maps and a Closure that takes those maps and executes each of those in parallel threads using the Jenkins parallel step. The parallel steps are named after the <code>name</code> key of the provided map, or the index if a name is not provided.</p>
+
+<h1 id="warning">Warning</h1>
+
+<p>Usage of this variable can seriously mess up your pipeline if you are not viligant in ensuring that you have protected critical sections and have prevented deadlock scenarios. Many steps, suchs as the <code>podTemplate</code> step provided by the Kubernetes plugin, are incompatible with this step since parallel calls overwrite the Jenkins configuration, creating deadlock. It is recommended that this variable is only accessed through the <code>parallelizeInfra</code> variable.</p>
+
+<h1 id="examples">Examples:</h1>
+
+<h2 id="basic-usage">Basic usage:</h2>
+<pre><code>parallel([[name: 'cluster1', arch: 'x86_64'], [name:'cluster2', arch: 'ppc64le']]) {
+    Map args ->
+    println(args)
+}
+</code></pre>

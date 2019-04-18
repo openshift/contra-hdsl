@@ -38,6 +38,11 @@ class Defaults {
     public static final String jnlpContainerName = 'jnlp'
     public static final String linchpinContainerName = 'linchpin-executor'
 
+    // The default names for secret files stored in Jenkins
+    public static final String AWS_CREDS_ID = 'aws.creds'
+    public static final String BEAKER_CREDS_ID = 'beaker.creds'
+    public static final String OPENSTACK_CREDS_ID = 'openstack.creds'
+
     // The default timeout in MINUTES
     public static final int executionTimeout = 30
     public static final String executionTimeoutUnit = 'MINUTES'

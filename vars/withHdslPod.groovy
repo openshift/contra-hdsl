@@ -19,9 +19,10 @@ def call(Map<String,String> config=[:], Closure body){
     config.source = config.source ?: defaultImageSource
 
     String openshiftServiceAccount = config.openshift_service_account ?: openshiftServiceAccount
+    String openshiftNamespace = config.openshift_namespace ?: infraUtils.getOpenshiftNamespace()
 
     // Linchpin Container
-    config.linchpin_container_name = config.linchpin_container_name ?: linchpinContainerName
+    config.linchpinContainerName = config.linchpinContainerName ?: linchpinContainerName
 
     /*
         If there's a value for config.<container_image_name>, we use that.
@@ -52,7 +53,7 @@ def call(Map<String,String> config=[:], Closure body){
                     linchpinDockerhubTag
 
     // Ansible Container
-    config.ansible_container_name = config.ansible_container_name ?: ansibleContainerName
+    config.ansibleContainerName = config.ansibleContainerName ?: ansibleContainerName
     config.ansible_image_name = config.ansible_image_name ?:
             config.source == 'openshift' ?
                     ansibleImageName :
@@ -78,13 +79,13 @@ def call(Map<String,String> config=[:], Closure body){
             cloud: 'openshift',
             serviceAccount: openshiftServiceAccount,
             idleMinutes: 0,
-            namespace: infraUtils.getOpenshiftNamespace(),
+            namespace: openshiftNamespace,
             containers:[
                     // This adds the custom slave container to the pod. Must be first with name 'jnlp'
                     containerTemplate(
                             name: config.jnlp_container_name,
                             image: config.source == 'openshift' ?
-                                    infraUtils.getOpenShiftImageUrl(config.jnlp_image_name, config.jnlp_tag) :
+                                    infraUtils.getOpenShiftImageUrl(openshiftNamespace, config.jnlp_image_name, config.jnlp_tag) :
                                     infraUtils.getDockerHubImageURL(config.jnlp_image_name, config.jnlp_tag),
                             ttyEnabled: false,
                             alwaysPullImage: true,
@@ -94,9 +95,9 @@ def call(Map<String,String> config=[:], Closure body){
                     ),
                     // This adds the ansible-executor container to the pod.
                     containerTemplate(
-                            name: config.ansible_container_name,
+                            name: config.ansibleContainerName,
                             image: config.source == 'openshift' ?
-                                    infraUtils.getOpenShiftImageUrl(config.ansible_image_name, config.ansible_tag) :
+                                    infraUtils.getOpenShiftImageUrl(openshiftNamespace, config.ansible_image_name, config.ansible_tag) :
                                     infraUtils.getDockerHubImageURL(config.ansible_image_name, config.ansible_tag),
                             ttyEnabled: true,
                             alwaysPullImage: true,
@@ -105,9 +106,9 @@ def call(Map<String,String> config=[:], Closure body){
                     ),
                     // This adds the linchpin-executor container to the pod.
                     containerTemplate(
-                            name: config.linchpin_container_name,
+                            name: config.linchpinContainerName,
                             image: config.source == 'openshift' ?
-                                    infraUtils.getOpenShiftImageUrl(config.linchpin_image_name, config.linchpin_tag) :
+                                    infraUtils.getOpenShiftImageUrl(openshiftNamespace, config.linchpin_image_name, config.linchpin_tag) :
                                     infraUtils.getDockerHubImageURL(config.linchpin_image_name, config.linchpin_tag),
                             ttyEnabled: true,
                             alwaysPullImage: true,
@@ -119,4 +120,3 @@ def call(Map<String,String> config=[:], Closure body){
        body()
     }
 }
-
