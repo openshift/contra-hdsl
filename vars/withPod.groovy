@@ -13,7 +13,7 @@ def call(Map config=[:], Closure body) {
     env.userPodName = config.podName ?: "pod-${UUID.randomUUID()}"
 
     String openshiftServiceAccount = config.openshift_service_account ?: openshiftServiceAccount
-    openshiftNamespace = config.openshift_namespace ?: infraUtils.getOpenshiftNamespace()
+    String openshiftNamespace = config.openshift_namespace ?: infraUtils.getOpenshiftNamespace()
 
     config.jnlp_image_name = config.jnlp_image_name ?: jnlpImageName
     config.jnlp_tag = config.jnlp_tag ?:

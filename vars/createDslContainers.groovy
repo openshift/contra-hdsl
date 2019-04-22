@@ -64,8 +64,7 @@ def call(Map<String, ?> config=[:], Closure body){
             body()
         }
       }
-    } catch (FlowInterruptedException e) {
-        println(e)
+    } catch (FlowInterruptedException) {
         error message:"Provisioning has timed out after ${executionTimeout} ${executionTimeoutUnit.toLowerCase()} - Aborting"
     }
 }

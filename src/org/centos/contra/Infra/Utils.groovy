@@ -128,10 +128,7 @@ def createBeakerInstances(HashMap<String,String>beaker_data){
         if (instance.count) {
             String name = instance.name ?: UUID.randomUUID().toString()
             for (i in 1..instance.count) {
-                // For some reason, trying to create this string using string interpolation results
-                // in a JSON object instead of a String. I have no explaination for this, so I have
-                // altered the String create to use the '+' operator because this works as expected.
-                instance.name = name + "_${i}"
+                instance.name = "${name}_${i}".toString()
                 def beaker_instance = new Beaker(instance.name, instance.distro, instance.arch, instance.variant)
                 beaker_instance.hostrequires = instance.hostrequires ?: beaker_instance.hostrequires
                 beaker_instance.keyvalue = instance.keyvalue ?: beaker_instance.keyvalue
@@ -316,13 +313,13 @@ def createOpenstackInstances(HashMap<String, String>openstackData){
  * @return
  */
 def executeInLinchpin(String command, String options, Boolean verbose, String containerName, String args = '') {
-    containerName = containerName ?: 'linchpin-executor'
+    String container = containerName ?: 'linchpin-executor'
     String workspace = "${WORKSPACE}/linchpin"
     if (verbose) {
         options = "--verbose ${options}"
     }
 
-    executeInContainer(containerName, workspace, 'linchpin', options, command, args) {
+    executeInContainer(container, workspace, 'linchpin', options, command, args) {
         // Create our linchpin.conf file and configure it to be able to create distilled output
         writeFile(file: "${WORKSPACE}/linchpin/linchpin.conf", text: """[lp]\ndistill_data = True\n\n[evars]\ngenerate_resources = False\n""")
         writeFile(file: "${WORKSPACE}/localhost", text: "localhost ansible_connection=local")
@@ -474,7 +471,6 @@ String createSSHKeyFile(String providerType, String containerName, String sshFil
     String key_store_path="${WORKSPACE}/ansible/keys"
     String sshFile = sshFileId ?: "${providerType}.ssh"
     String sshUser = env.SSH_USERNAME ?: null
-    String sshPassphrase = env.SSH_PASSPHRASE ?: ''
     container(containerName){
         withCredentials([sshUserPrivateKey(
                 credentialsId: sshFile,
@@ -488,10 +484,9 @@ String createSSHKeyFile(String providerType, String containerName, String sshFil
             """
 
             sshUser = sshUser ?: env.SSH_USERNAME
-            sshPassphrase = sshPassphrase ?: env.SSH_PASSPHRASE
         }
-        if (sshPassphrase) {
-            sh "ssh-keygen -p -f '${key_store_path}/${providerType}.ssh' -N ${sshPassphrase}"
+        if (env.SSH_PASSPHRASE) {
+            sh "ssh-keygen -p -f '${key_store_path}/${providerType}.ssh' -N ${env.SSH_PASSPHRASE}"
         }
         sh "chmod 0600 '${key_store_path}/${providerType}.ssh'"
     }
@@ -839,7 +834,7 @@ static String getDockerHubImageURL(String imageName, String imageTag){
  * @param imageTag - Image tag.
  * @return - URL for image pull.
  */
-def getOpenShiftImageUrl(String openshiftNamespace = null, String imageName, String imageTag){
+def getOpenShiftImageUrl(String openshiftNamespace, String imageName, String imageTag){
 
     // Check to see if these values are available as env vars,
     // which would be the case if either method has been called previously
