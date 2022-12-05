@@ -1,5 +1,9 @@
 # contra-hdsl
 
+## Archived
+
+This repo is no longer actively maintained / updated.
+
 ## Summary
 
 This repo contains a Jenkins shared library, referred to as the Contra HDSL, which provides global variables representing a set of CI/CD primatives. These global variables are intended to simplify the creation of Jenkinsfiles. Additionally, the underlying methods in the shared library can be imported and used on an ad hoc basis in the creation of more complex Jenkinsfiles or in the creation of other libraries or global variables.
